@@ -32,7 +32,6 @@
 #include <AE/Graphics/Texture.hpp>
 #include <AE/Graphics/RenderTarget.hpp>
 
-
 namespace ae
 {
 namespace priv

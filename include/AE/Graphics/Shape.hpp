@@ -28,9 +28,8 @@
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
+#include <AE/Graphics/SceneNode.hpp>
 #include <AE/Graphics/Export.hpp>
-#include <AE/Graphics/Drawable.hpp>
-#include <AE/Graphics/Transformable.hpp>
 #include <AE/Graphics/VertexArray.hpp>
 #include <AE/System/Vector2.hpp>
 
@@ -41,7 +40,7 @@ namespace ae
 /// \brief Base class for textured shapes with outline
 ///
 ////////////////////////////////////////////////////////////
-class SFML_GRAPHICS_API Shape : public Drawable, public Transformable
+class SFML_GRAPHICS_API Shape : public SceneNode
 {
 public:
 

@@ -28,9 +28,8 @@
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
+#include <AE/Graphics/SceneNode.hpp>
 #include <AE/Graphics/Export.hpp>
-#include <AE/Graphics/Drawable.hpp>
-#include <AE/Graphics/Transformable.hpp>
 #include <AE/Graphics/Vertex.hpp>
 #include <AE/Graphics/Rect.hpp>
 
@@ -44,7 +43,7 @@ class Texture;
 ///        own transformations, color, etc.
 ///
 ////////////////////////////////////////////////////////////
-class SFML_GRAPHICS_API Sprite : public Drawable, public Transformable
+class SFML_GRAPHICS_API Sprite : public SceneNode
 {
 public:
 

@@ -31,7 +31,6 @@
 #include <AE/Graphics/Export.hpp>
 #include <AE/Graphics/Shape.hpp>
 
-
 namespace ae
 {
 ////////////////////////////////////////////////////////////

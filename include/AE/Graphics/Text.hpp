@@ -28,9 +28,8 @@
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
+#include <AE/Graphics/SceneNode.hpp>
 #include <AE/Graphics/Export.hpp>
-#include <AE/Graphics/Drawable.hpp>
-#include <AE/Graphics/Transformable.hpp>
 #include <AE/Graphics/Font.hpp>
 #include <AE/Graphics/Rect.hpp>
 #include <AE/Graphics/VertexArray.hpp>
@@ -45,7 +44,7 @@ namespace ae
 /// \brief Graphical text that can be drawn to a render target
 ///
 ////////////////////////////////////////////////////////////
-class SFML_GRAPHICS_API Text : public Drawable, public Transformable
+class SFML_GRAPHICS_API Text : public SceneNode
 {
 public:
 
