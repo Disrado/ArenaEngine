@@ -22,8 +22,8 @@ set(SRC
     ${INCROOT}/Image.hpp
     ${SRCROOT}/ImageLoader.cpp
     ${SRCROOT}/ImageLoader.hpp
-    ${SRCROOT}/Node.cpp
-    ${INCROOT}/Node.hpp
+    ${SRCROOT}/SceneNode.cpp
+    ${INCROOT}/SceneNode.hpp
     ${INCROOT}/PrimitiveType.hpp
     ${INCROOT}/Rect.hpp
     ${INCROOT}/Rect.inl

@@ -1,15 +1,15 @@
 #include <AE/Graphics/SceneNode.hpp>
+#include <functional>
 
 namespace ae
-//{
+{
 
 SceneNode::SceneNode() :
     drawOrder(0),
     tag(""),
-    parent(nullptr),
-    children(std::vector<sptrNode>())
+    parent(nullptr)
 {
-    
+    children = std::map<int, sptrNode>();
 }
 
 void SceneNode::setParent(sptrNode _parent)
@@ -42,12 +42,12 @@ const std::string& SceneNode::getTag() const
     return tag;
 }
 
-void SceneNode::setChildren(const std::vector<sptrNode>& _children)
+void SceneNode::setChildren(const std::map<int, sptrNode>& _children)
 {
     children = _children;
 }
     
-std::vector<sptrNode> SceneNode::getChildren() const
+const std::map<int, sptrNode>& SceneNode::getChildren() const
 {
     return children;
 }
@@ -57,13 +57,13 @@ void SceneNode::removeAllChildren()
     children.clear();
 }
 
-
-void SceneNode::addChild(sptrNode child, int drawOrder = 0, const std::string& tag = "")
+void SceneNode::addChildNode(sptrNode child, int drawOrder, const std::string& tag)
 {
-    children.push_back(child);
-    child->setDrawOrder(drawOrder);
-    child->setTag(tag);
-    child->setParent(this);
+    // child->setDrawOrder(drawOrder);
+    // child->setTag(tag);
+    // child->setParent(this);
+
+    
 }
 
 

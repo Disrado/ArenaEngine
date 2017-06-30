@@ -43,7 +43,7 @@ class Texture;
 ///        own transformations, color, etc.
 ///
 ////////////////////////////////////////////////////////////
-class SFML_GRAPHICS_API Sprite : public SceneNode
+class SFML_GRAPHICS_API Sprite : public Drawable
 {
 public:
 

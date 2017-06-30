@@ -40,7 +40,7 @@ namespace ae
 /// \brief Base class for textured shapes with outline
 ///
 ////////////////////////////////////////////////////////////
-class SFML_GRAPHICS_API Shape : public SceneNode
+class SFML_GRAPHICS_API Shape : public Drawable
 {
 public:
 

@@ -3,42 +3,50 @@
 
 #include <AE/Graphics/Drawable.hpp>
 #include <AE/Graphics/Transformable.hpp>
+#include <map>
+#include <memory>
 #include <vector>
+
+class SceneNode;
 
 typedef std::shared_ptr<SceneNode> sptrNode;
 
 namespace ae
 {
-
+	
 class SceneNode : public Drawable, public Transformable
 {    
 private:
     int drawOrder;
     std::string tag;
     sptrNode parent;
-    std::vector<sptrNode> children;
+    std::map<int, sptrNode> children;
+    std::map<int, Drawable*> attachedObjects;
     
 protected:
-    Node();
-    virtual ~Node() {}
+    SceneNode();
+    virtual ~SceneNode() {}
     
     void setParent(sptrNode _parent);
     sptrNode getParent() const;
     
     void setDrawOrder(int _drawOrder);
     int getDrawOrder() const;
-        
+    
     void setTag(const std::string& _tag);
-    std::string getTag() const;
-
-    void setChildren(const std::vector<sptrNode>& _children);
-    std::vector<sptrNode> getChildren() const;
+    const std::string& getTag() const;
+    
+    void setChildren(const std::map<int, sptrNode>& children);
+    const std::map<int, sptrNode>& getChildren() const;
     
     void removeAllChildren();
+    
+    void addChildNode(sptrNode child, int _drawOrder = 0, const std::string& _tag = "");
 
-    void addChild(sptrNode child, int _drawOrder = 0, const std::string& _tag = "");
+    void attachObject(std::shared_ptr<Drawable> object, int objectID);
+    void detachObject(int objectID);
 };
-
+	
 } //namespace ae
 
 

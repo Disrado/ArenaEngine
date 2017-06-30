@@ -44,7 +44,7 @@ namespace ae
 /// \brief Graphical text that can be drawn to a render target
 ///
 ////////////////////////////////////////////////////////////
-class SFML_GRAPHICS_API Text : public SceneNode
+class SFML_GRAPHICS_API Text : public Drawable
 {
 public:
 
