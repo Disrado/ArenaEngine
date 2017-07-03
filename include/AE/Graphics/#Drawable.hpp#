@@ -30,7 +30,6 @@
 ////////////////////////////////////////////////////////////
 #include <AE/Graphics/Export.hpp>
 #include <AE/Graphics/RenderStates.hpp>
-#include <AE/Graphics/Transformable.hpp>
 
 namespace ae
 {
