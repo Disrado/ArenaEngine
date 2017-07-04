@@ -4,7 +4,7 @@
 #include <AE/Graphics/Object.hpp>
 #include <AE/Graphics/Transformable.hpp>
 #include <AE/Graphics/RenderWindow.hpp>
-#include <map>
+#include <set>
 #include <memory>
 
 namespace ae
@@ -14,47 +14,62 @@ class SceneNode : public Transformable,
                   public std::enable_shared_from_this<SceneNode> 
 {    
 private:
-    typedef std::shared_ptr<SceneNode> SceneNode_sptr;
-
     int drawOrder;
     std::string tag;
-    SceneNode_sptr parent;
-    std::map<std::string, SceneNode_sptr> children;
+    std::shared_ptr<SceneNode> parent;
+    std::set<std::shared_ptr<SceneNode>> children;
     std::shared_ptr<Object> attachedObject;
-
-    void sortChildrenByDrawOrder();
-        
+    
 protected:
     SceneNode();
-    SceneNode(const std::string& _tag, int _drawOrder);
+    SceneNode(int _drawOrder, const std::string& _tag);
     virtual ~SceneNode() {}
+
+    void setParent(std::shared_ptr<SceneNode>  _parent);
     void removeParent();
-    virtual void draw(ae::RenderWindow& renderWindow);
     
 public:
-    void setParent(SceneNode_sptr _parent);
-    SceneNode_sptr getParent() const;
-    
     void setDrawOrder(int _drawOrder);
     int getDrawOrder() const;
     
     void setTag(const std::string& _tag);
     const std::string& getTag() const;
 
-    void setChildren(const std::map<std::string, SceneNode_sptr>& children);
-    const std::map<std::string, SceneNode_sptr>& getChildren() const;
-    
-    void removeChild(const std::string& _tag);
-    void removeChild(SceneNode_sptr _child);
-    
+    void setChildren(const std::set<std::shared_ptr<SceneNode>>& children);
+    const std::set<std::shared_ptr<SceneNode>>& getChildren() const;
+
     void removeChildren();
-    void addChild(SceneNode_sptr);
-    void rebaseToNewParent(SceneNode_sptr newParent);
+
+    void addChild(std::shared_ptr<SceneNode>);
+
+    void removeChild(std::shared_ptr<SceneNode> _child);
+    void removeChild(const std::string& _tag);
+    
+    void rebaseToNewParent(std::shared_ptr<SceneNode> newParent);
     
     void attachObject(std::shared_ptr<Object> object);
-    void attachObjectWithTransform(std::shared_ptr<Object> object);
-
     std::shared_ptr<Object> detachObject();
+
+    void setOriginRecursive(const Vector2f& origin);
+    void setOriginRecursive(float x, float y);
+    
+    void setScaleRecursive(const Vector2f& factors);
+    void setScaleRecursive(float factorX, float factorY);
+
+    void setPositionRecursive(const Vector2f& position);
+    void setPositionRecursive(float x, float y);
+    
+    void setRotationRecursive(const float angle);
+    
+    void moveRecursive(const Vector2f& offset);
+    void moveRecursive(float offsetX, float offsetY);
+    
+    void rotateRecursive(const float angle);
+    
+    void scaleRecursive(const Vector2f& factor);
+    void scaleRecursive(float factorX, float factorY);
+    
+    virtual void draw(ae::RenderWindow& renderWindow);
 };
 	
 } //namespace ae
