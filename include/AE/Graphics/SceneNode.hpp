@@ -32,11 +32,6 @@ public:
               float _angle = 0.0);
 
     virtual ~SceneNode() {}
-
-    bool operator< (const SceneNode& right)
-    {
-        return this->getDrawOrder() < right.getDrawOrder();
-    }
     
     std::shared_ptr<SceneNode>
     createChildSceneNode(int _drawOrder = 0,
@@ -103,6 +98,11 @@ public:
     void scaleRecursive(float factorX, float factorY);
 
     void draw(RenderTarget& target, RenderStates states) const override;
+
+    bool operator< (const SceneNode& right)
+    {
+        return this->getDrawOrder() < right.getDrawOrder();
+    }
 };
     
 } //namespace ae
