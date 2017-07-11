@@ -25,6 +25,10 @@ set(SRC
     ${INCROOT}/Object.hpp
     ${SRCROOT}/SceneNode.cpp
     ${INCROOT}/SceneNode.hpp
+    ${SRCROOT}/Layer.cpp
+    ${INCROOT}/Layer.hpp
+    ${SRCROOT}/Scene.cpp
+    ${INCROOT}/Scene.hpp
     ${INCROOT}/PrimitiveType.hpp
     ${INCROOT}/Rect.hpp
     ${INCROOT}/Rect.inl

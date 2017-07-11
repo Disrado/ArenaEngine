@@ -9,7 +9,7 @@ namespace ae
 
 class Object : public Drawable, public Transformable
 {    
-protected:
+public:
     virtual ~Object() {}
     virtual void draw(RenderTarget& target, RenderStates states) const = 0;
 };

@@ -5,31 +5,47 @@
 namespace ae
 {
 
-namespace
-{
-    struct DrawOrderComparator
-    {
-        bool operator() (const std::shared_ptr<SceneNode> l,
-                         const std::shared_ptr<SceneNode> r)
-        {
-            return l->getDrawOrder() < r->getDrawOrder();
-        }
-    };
-}
-    
 SceneNode::SceneNode() :
     drawOrder(0),
     tag(""),
     parent(nullptr),
-    children(std::set<std::shared_ptr<SceneNode>>(DrawOrderComparator))
+    children(std::set<std::shared_ptr<SceneNode>>())
 { }
 
-SceneNode::SceneNode(int _drawOrder, const std::string& _tag) :
-    drawOrder(_drawOrder),
-    tag(_tag),
-    parent(nullptr),
-    children(std::set<std::shared_ptr<SceneNode>>(DrawOrderComparator))
-{ }
+SceneNode::SceneNode(int _drawOrder,
+                     const std::string& _tag,
+                     const ae::Vector2f& position,
+                     const ae::Vector2f& scale,
+                     const ae::Vector2f& origin,
+                     float angle)
+    : drawOrder(_drawOrder),
+      tag(_tag),
+      parent(nullptr),
+      children(std::set<std::shared_ptr<SceneNode>>())
+{
+    setPosition(position);
+    setScale(scale);
+    setOrigin(origin);
+    setRotation(angle);
+}
+
+std::shared_ptr<SceneNode>
+SceneNode::createChildSceneNode(int drawOrder,
+                                const std::string& tag,
+                                const ae::Vector2f& position,
+                                const ae::Vector2f& scale,
+                                const ae::Vector2f& origin,
+                                float angle)
+{
+    auto newChild = std::make_shared<SceneNode>(drawOrder,
+                                                tag,
+                                                position,
+                                                scale,
+                                                origin,
+                                                angle);
+    this->addChild(newChild);
+    return newChild;
+}
     
 void SceneNode::removeParent()
 {
@@ -41,46 +57,21 @@ void SceneNode::setParent(std::shared_ptr<SceneNode> _parent)
     parent->removeChild(shared_from_this());
     _parent->addChild(shared_from_this());
 }
-
-void SceneNode::setDrawOrder(int _drawOrder)
-{
-    drawOrder = _drawOrder;
-    parent->removeChild(shared_from_this());
-    parent->addChild(shared_from_this());
-}
-
-int SceneNode::getDrawOrder() const
-{
-    return drawOrder;
-}
-
-void SceneNode::setTag(const std::string& _tag)
-{
-    tag = _tag;
-}
-
-const std::string& SceneNode::getTag() const
-{
-    return tag;
-}
     
-void SceneNode::setChildren(const std::set<std::shared_ptr<SceneNode>>& _children)
-{
-    children.clear();
-    children.insert(_children.begin(), _children.end());
-}
-    
-const std::set<std::shared_ptr<SceneNode>>& SceneNode::getChildren() const
-{
-    return children;
-}
-
 void SceneNode::rebaseToNewParent(std::shared_ptr<SceneNode> newParent)
 {
     parent->removeChild(shared_from_this());
     newParent->addChild(shared_from_this());
 }
-    
+
+void SceneNode::rebaseChildrenToNewParent(std::shared_ptr<SceneNode> newParent)
+{
+    for(auto& itr : children) {
+        parent->removeChild(shared_from_this());
+        newParent->addChild(shared_from_this());
+    }
+}
+
 void SceneNode::removeChild(const std::string& _tag)
 {
     auto itr = std::find_if(children.begin(), children.end(),
@@ -131,9 +122,118 @@ void SceneNode::attachObject(std::shared_ptr<Object> object)
     
 std::shared_ptr<Object> SceneNode::detachObject()
 {
-    auto returnValue = attachedObject;
-    attachedObject = nullptr;
-    return returnValue; 
+    if(attachedObject) {
+        auto returnValue = attachedObject;
+        attachedObject = nullptr;
+        return returnValue;
+    } else
+        return nullptr;
+}
+    
+void SceneNode::setDrawOrder(int _drawOrder)
+{
+    drawOrder = _drawOrder;
+    parent->removeChild(shared_from_this());
+    parent->addChild(shared_from_this());
+}
+
+int SceneNode::getDrawOrder() const
+{
+    return drawOrder;
+}
+
+void SceneNode::setTag(const std::string& _tag)
+{
+    tag = _tag;
+}
+
+const std::string& SceneNode::getTag() const
+{
+    return tag;
+}
+
+void SceneNode::setOrigin(const Vector2f& origin)
+{
+    this->Transformable::setOrigin(origin);
+    if(attachedObject)
+        attachedObject->setOrigin(origin);
+}
+    
+void SceneNode::setOrigin(float x, float y)
+{
+    this->Transformable::setOrigin(x, y);
+    if(attachedObject)
+        attachedObject->setOrigin(x, y);
+}    
+
+void SceneNode::setScale(const Vector2f& factors)
+{
+    this->Transformable::setScale(factors);
+    if(attachedObject)
+        attachedObject->setScale(factors);
+}
+
+void SceneNode::setScale(float factorX, float factorY)
+{
+    this->Transformable::setScale(factorX, factorY);
+    if(attachedObject)
+        attachedObject->setScale(factorX, factorY);
+}
+
+void SceneNode::setPosition(const Vector2f& position)
+{
+    this->Transformable::setPosition(position);
+    if(attachedObject)
+        attachedObject->setPosition(position);
+}
+
+void SceneNode::setPosition(float x, float y)
+{
+    this->Transformable::setPosition(x, y);
+    if(attachedObject)
+        attachedObject->setPosition(x, y);
+}    
+
+void SceneNode::setRotation(const float angle)
+{
+    this->Transformable::setRotation(angle);
+    if(attachedObject)
+        attachedObject->setRotation(angle);
+}
+        
+void SceneNode::move(const Vector2f& offset)
+{
+    this->Transformable::move(offset);
+    if(attachedObject)
+        attachedObject->move(offset);
+}
+
+void SceneNode::move(float offsetX, float offsetY)
+{
+    this->Transformable::move(offsetX, offsetY);
+    if(attachedObject)
+        attachedObject->move(offsetX, offsetY);
+}
+    
+void SceneNode::rotate(const float angle)
+{
+    this->Transformable::rotate(angle);
+    if(attachedObject)
+        attachedObject->rotate(angle);
+}
+    
+void SceneNode::scale(const Vector2f& factor)
+{
+    this->Transformable::scale(factor);
+    if(attachedObject)
+        attachedObject->scale(factor);
+}
+
+void SceneNode::scale(float factorX, float factorY)
+{
+    this->Transformable::scale(factorX, factorY);
+    if(attachedObject)
+        attachedObject->setOrigin(factorX, factorY);
 }
     
 void SceneNode::setOriginRecursive(const ae::Vector2f& origin)
@@ -231,13 +331,14 @@ void SceneNode::scaleRecursive(float factorX, float factorY)
     
     this->scale(factorX, factorY);
 }        
-    
-void SceneNode::draw(ae::RenderWindow& renderWindow)
+
+void SceneNode::draw(RenderTarget& target, RenderStates states) const
 {
     for(auto& child : children)
-        child->draw(renderWindow);
-    
-    renderWindow.draw(*attachedObject);
+        child->draw(target, states);
+
+    if(attachedObject)
+        attachedObject->draw(target, states);
 }
     
 } //namespace ae
