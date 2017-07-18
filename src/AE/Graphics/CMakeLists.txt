@@ -22,13 +22,8 @@ set(SRC
     ${INCROOT}/Image.hpp
     ${SRCROOT}/ImageLoader.cpp
     ${SRCROOT}/ImageLoader.hpp
-    ${INCROOT}/Object.hpp
-    ${SRCROOT}/SceneNode.cpp
-    ${INCROOT}/SceneNode.hpp
-    ${SRCROOT}/Layer.cpp
-    ${INCROOT}/Layer.hpp
-    ${SRCROOT}/Scene.cpp
-    ${INCROOT}/Scene.hpp
+    ${SRCROOT}/SceneManager.cpp
+    ${INCROOT}/SceneManager.hpp
     ${INCROOT}/PrimitiveType.hpp
     ${INCROOT}/Rect.hpp
     ${INCROOT}/Rect.inl
@@ -78,6 +73,13 @@ set(DRAWABLES_SRC
     ${INCROOT}/Text.hpp
     ${SRCROOT}/VertexArray.cpp
     ${INCROOT}/VertexArray.hpp
+    ${INCROOT}/Object.hpp
+    ${SRCROOT}/SceneNode.cpp
+    ${INCROOT}/SceneNode.hpp
+    ${SRCROOT}/Layer.cpp
+    ${INCROOT}/Layer.hpp
+    ${SRCROOT}/Scene.cpp
+    ${INCROOT}/Scene.hpp
 )
 source_group("drawables" FILES ${DRAWABLES_SRC})
 

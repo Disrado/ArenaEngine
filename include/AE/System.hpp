@@ -35,6 +35,7 @@
 #include <AE/System/FileInputStream.hpp>
 #include <AE/System/InputStream.hpp>
 #include <AE/System/Lock.hpp>
+#include <AE/System/Logger.hpp>
 #include <AE/System/MemoryInputStream.hpp>
 #include <AE/System/Mutex.hpp>
 #include <AE/System/NonCopyable.hpp>

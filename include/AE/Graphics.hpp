@@ -55,6 +55,10 @@
 #include <AE/Graphics/Vertex.hpp>
 #include <AE/Graphics/VertexArray.hpp>
 #include <AE/Graphics/View.hpp>
+#include <AE/Graphics/SceneNode.hpp>
+#include <AE/Graphics/Layer.hpp>
+#include <AE/Graphics/Scene.hpp>
+#include <AE/Graphics/SceneManager.hpp>
 
 
 #endif // SFML_GRAPHICS_HPP

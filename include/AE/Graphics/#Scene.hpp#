@@ -9,9 +9,9 @@
 namespace ae
 {
 
-class SFML_GRAPHICS_API Scene : public Drawable
+class Scene : public Drawable
 {
-protected:
+private:
     std::set<std::shared_ptr<Layer>> layers;
     
 public:
@@ -20,11 +20,13 @@ public:
 
     std::shared_ptr<Layer> createLayer(int drawOrder, const std::string& tag = "");
     void addLayer(std::shared_ptr<Layer> layer);
+    
     void deleteLayer(const std::string& tag);
     void deleteLayer(std::shared_ptr<Layer> layer);
+    
     void changeDrawOrder(const std::string& tag, int newDrawOrder);
     void changeDrawOrder(std::shared_ptr<Layer> layer, int newDrawOrder);
-
+    
     virtual void draw(RenderTarget& target, RenderStates states) const override;
 };
 

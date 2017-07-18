@@ -39,8 +39,8 @@ set(SRC
     ${INCROOT}/FileInputStream.hpp
     ${SRCROOT}/MemoryInputStream.cpp
     ${INCROOT}/MemoryInputStream.hpp
-    ${SRCROOT}/Log.cpp
-    ${INCROOT}/Log.hpp
+    ${SRCROOT}/Logger.cpp
+    ${INCROOT}/Logger.hpp
 )
 source_group("" FILES ${SRC})
 

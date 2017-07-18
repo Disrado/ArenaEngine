@@ -8,29 +8,28 @@
 namespace ae
 {
 
-class Layer : public Drawable
+class SFML_GRAPHICS_API Layer : public Drawable
 { 
 private:
     std::shared_ptr<SceneNode> rootSceneNode;
-    std::string tag;
     int drawOrder;
+    std::string tag;
     
 public:
     Layer();
     Layer(int _drawOrder, const std::string& _tag);
-    virtual ~Layer();
     
     std::shared_ptr<SceneNode> getRootSceneNode();
 
     void setTag(const std::string& _tag);
-    const std::string& getTag() const;
+    const std::string& getTag();
     
-    int getDrawOrder() const;
     void setDrawOrder(int _drawOrder);
+    int getDrawOrder() const;
 
     void clear();
     
-    virtual void draw(RenderTarget& target, RenderStates states) const override;
+    void draw(RenderTarget& target, RenderStates states) const override;
 
     bool operator< (const Layer& right)
     {

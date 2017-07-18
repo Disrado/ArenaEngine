@@ -14,29 +14,34 @@ Layer::Layer(int _drawOrder, const std::string& _tag) :
     tag(_tag)
 { }
 
+std::shared_ptr<SceneNode> Layer::getRootSceneNode()
+{
+    return rootSceneNode;
+}
+    
 void Layer::setTag(const std::string& _tag)
 {
     tag = _tag;
 }
     
-const std::string& Layer::getTag() const
+const std::string& Layer::getTag()
 {
     return tag;
 }
     
-int Layer::getDrawOrder() const
-{
-    return drawOrder;
-}
-
 void Layer::setDrawOrder(int _drawOrder)
 {
     drawOrder = _drawOrder;
 }
 
+    int Layer::getDrawOrder() const
+{
+    return drawOrder;
+}
+
 void Layer::clear()
 {
-    rootSceneNode->removeChildren();
+    rootSceneNode->destroyChildrenRecursive();
     rootSceneNode->detachObject();
 }
     

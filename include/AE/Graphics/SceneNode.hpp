@@ -9,8 +9,8 @@
 namespace ae
 {
             
-class SceneNode : public Object,
-                  public std::enable_shared_from_this<SceneNode> 
+class SFML_GRAPHICS_API SceneNode : public Object,
+                                    public std::enable_shared_from_this<SceneNode> 
 {
 private:
     int drawOrder;
@@ -19,33 +19,32 @@ private:
     std::set<std::shared_ptr<SceneNode>> children;
     std::shared_ptr<Object> attachedObject;
           
-    void setParent(std::shared_ptr<SceneNode> _parent);
     void removeParent();
+    void setParent(std::shared_ptr<SceneNode> _parent);
     
 public:
-    SceneNode();
     SceneNode(int _drawOrder = 0,
               const std::string& _tag = "",
-              const ae::Vector2f& _position = ae::Vector2f(),
-              const ae::Vector2f& _scale = ae::Vector2f(),
-              const ae::Vector2f& _origin = ae::Vector2f(),
-              float _angle = 0.0);
+              const ae::Vector2f& position = ae::Vector2f(),
+              const ae::Vector2f& scale = ae::Vector2f(1, 1),
+              const ae::Vector2f& origin = ae::Vector2f(),
+              float angle = 0.0);
 
-    virtual ~SceneNode() {}
-    
     std::shared_ptr<SceneNode>
-    createChildSceneNode(int _drawOrder = 0,
+    createChildSceneNode(int drawOrder = 0,
                          const std::string& _tag = "",
-                         const ae::Vector2f& _position = ae::Vector2f(),
-                         const ae::Vector2f& _scale = ae::Vector2f(),
-                         const ae::Vector2f& _origin = ae::Vector2f(),
-                         float _angle = 0.0);
+                         const ae::Vector2f& position = ae::Vector2f(),
+                         const ae::Vector2f& scale = ae::Vector2f(1, 1),
+                         const ae::Vector2f& origin = ae::Vector2f(),
+                         float angle = 0.0);
     
     void addChild(std::shared_ptr<SceneNode>);
 
     void removeChild(std::shared_ptr<SceneNode> _child);
     void removeChild(const std::string& _tag);
+
     void removeChildren();
+    void destroyChildrenRecursive();
     
     void rebaseToNewParent(std::shared_ptr<SceneNode> newParent);
     void rebaseChildrenToNewParent(std::shared_ptr<SceneNode> newParent);

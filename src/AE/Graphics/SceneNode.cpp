@@ -1,16 +1,9 @@
 #include <AE/Graphics/SceneNode.hpp>
 #include <algorithm>
-#include <functional>
+#include <AE/System/Logger.hpp>
 
 namespace ae
 {
-
-SceneNode::SceneNode() :
-    drawOrder(0),
-    tag(""),
-    parent(nullptr),
-    children(std::set<std::shared_ptr<SceneNode>>())
-{ }
 
 SceneNode::SceneNode(int _drawOrder,
                      const std::string& _tag,
@@ -21,12 +14,13 @@ SceneNode::SceneNode(int _drawOrder,
     : drawOrder(_drawOrder),
       tag(_tag),
       parent(nullptr),
-      children(std::set<std::shared_ptr<SceneNode>>())
+      children(std::set<std::shared_ptr<SceneNode>>()),
+      attachedObject(nullptr)
 {
-    setPosition(position);
-    setScale(scale);
-    setOrigin(origin);
-    setRotation(angle);
+    Transformable::setPosition(position);
+    Transformable::setScale(scale);
+    Transformable::setOrigin(origin);
+    Transformable::setRotation(angle);
 }
 
 std::shared_ptr<SceneNode>
@@ -51,11 +45,10 @@ void SceneNode::removeParent()
 {
     parent = nullptr;
 }
-    
-void SceneNode::setParent(std::shared_ptr<SceneNode> _parent)
+
+void SceneNode::setParent(std::shared_ptr<SceneNode> newParent)
 {
-    parent->removeChild(shared_from_this());
-    _parent->addChild(shared_from_this());
+    parent = newParent;
 }
     
 void SceneNode::rebaseToNewParent(std::shared_ptr<SceneNode> newParent)
@@ -66,10 +59,10 @@ void SceneNode::rebaseToNewParent(std::shared_ptr<SceneNode> newParent)
 
 void SceneNode::rebaseChildrenToNewParent(std::shared_ptr<SceneNode> newParent)
 {
-    for(auto& itr : children) {
-        parent->removeChild(shared_from_this());
-        newParent->addChild(shared_from_this());
+    for(auto& child : children) {
+        newParent->addChild(child);
     }
+    children.clear();
 }
 
 void SceneNode::removeChild(const std::string& _tag)
@@ -98,11 +91,22 @@ void SceneNode::removeChild(std::shared_ptr<SceneNode> _child)
 
 void SceneNode::removeChildren()
 {
-    for(auto& itr : children)
-        itr->removeParent();
+    for(auto& child : children)
+        child->removeParent();
     
     children.clear();
 }
+
+void SceneNode::destroyChildrenRecursive()
+{
+    for(auto& child : children) {
+        child->removeParent();
+        child->detachObject();
+        child->destroyChildrenRecursive();
+    }
+    
+    children.clear();
+}        
 
 void SceneNode::addChild(std::shared_ptr<SceneNode> child)
 {
@@ -115,7 +119,9 @@ void SceneNode::attachObject(std::shared_ptr<Object> object)
     attachedObject = object;
 
     attachedObject->setOrigin(this->getOrigin());
-    attachedObject->setScale(this->getScale());
+    std::cout << getScale().x;
+    std::cout << getScale().y;
+    //attachedObject->setScale(getScale());
     attachedObject->setPosition(this->getPosition());
     attachedObject->setRotation(this->getRotation());
 }
@@ -131,9 +137,9 @@ std::shared_ptr<Object> SceneNode::detachObject()
 }
     
 void SceneNode::setDrawOrder(int _drawOrder)
-{
-    drawOrder = _drawOrder;
-    parent->removeChild(shared_from_this());
+{// TODO: sort children instead add/remove
+    drawOrder = _drawOrder; 
+    parent->removeChild(shared_from_this()); 
     parent->addChild(shared_from_this());
 }
 
@@ -331,7 +337,7 @@ void SceneNode::scaleRecursive(float factorX, float factorY)
     
     this->scale(factorX, factorY);
 }        
-
+    
 void SceneNode::draw(RenderTarget& target, RenderStates states) const
 {
     for(auto& child : children)

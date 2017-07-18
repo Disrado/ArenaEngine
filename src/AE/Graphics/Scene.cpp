@@ -11,6 +11,7 @@ std::shared_ptr<Layer> Scene::createLayer(int drawOrder, const std::string& tag)
 {
     auto newLayer = std::make_shared<Layer>(drawOrder, tag);
     layers.insert(newLayer);
+
     return newLayer;
 }
     
