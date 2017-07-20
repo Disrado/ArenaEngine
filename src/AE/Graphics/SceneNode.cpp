@@ -53,16 +53,20 @@ void SceneNode::setParent(std::shared_ptr<SceneNode> newParent)
     
 void SceneNode::rebaseToNewParent(std::shared_ptr<SceneNode> newParent)
 {
-    parent->removeChild(shared_from_this());
-    newParent->addChild(shared_from_this());
+    if(newParent) {
+        parent->removeChild(shared_from_this());
+        newParent->addChild(shared_from_this());
+    }
 }
-
+    
 void SceneNode::rebaseChildrenToNewParent(std::shared_ptr<SceneNode> newParent)
 {
-    for(auto& child : children) {
-        newParent->addChild(child);
+    if(newParent) {
+        for(auto& child : children)
+            newParent->addChild(child);
+
+        children.clear();
     }
-    children.clear();
 }
 
 void SceneNode::removeChild(const std::string& _tag)
@@ -110,18 +114,21 @@ void SceneNode::destroyChildrenRecursive()
 
 void SceneNode::addChild(std::shared_ptr<SceneNode> child)
 {
-    child->setParent(shared_from_this());
-    children.insert(child);
+    if(child) {
+        child->setParent(shared_from_this());
+        children.insert(child);
+    }
 }
 
 void SceneNode::attachObject(std::shared_ptr<Object> object)
 {
-    attachedObject = object;
+    if(object)
+        attachedObject = object;
 
     attachedObject->setOrigin(this->getOrigin());
     std::cout << getScale().x;
     std::cout << getScale().y;
-    //attachedObject->setScale(getScale());
+    attachedObject->setScale(getScale());
     attachedObject->setPosition(this->getPosition());
     attachedObject->setRotation(this->getRotation());
 }
