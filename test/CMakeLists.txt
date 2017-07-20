@@ -13,6 +13,7 @@ set(SOURCE_DIR ${CMAKE_SOURCE_DIR}/)
 
 #SGML-, TGUI-headers
 include_directories(${CMAKE_SOURCE_DIR}/../include/)
+include_directories(${CMAKE_SOURCE_DIR}/include/)
 
 link_directories(${AE_LIBRARIES_DIR})
 
