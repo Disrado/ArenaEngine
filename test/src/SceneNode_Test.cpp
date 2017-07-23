@@ -10,11 +10,10 @@ bool SceneNode_Test::SceneNodeConstructor_Test()
        && SNode.getPosition() == ae::Vector2f(0, 0)
        && SNode.getScale() == ae::Vector2f(1, 1)
        && SNode.getOrigin() == SNode.getPosition()
-       && SNode.getRotation() == 0.0 && false)
+       && SNode.getRotation() == 0.0)
      	return true;
     else {
-	std::cerr << "SceneNodeConstructor_Test failed"
-		  <<" \n\tIn SceneNode()"
+	std::cerr <<" \n\tIn SceneNode()"
 		  << "\n\t\tIncorrect values of default parameters" << std::endl;
 	
 	return false;
@@ -23,6 +22,9 @@ bool SceneNode_Test::SceneNodeConstructor_Test()
 
 bool createChildSceneNode_Test()
 {
+    auto SNode = ae::SceneNode();
+    
+    
     return true;
 }
 

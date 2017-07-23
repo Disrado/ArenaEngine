@@ -24,7 +24,7 @@ file(GLOB SOURCES
   "${SOURCE_DIR}/src/*.cpp")
 
 find_library(AE_GRAPHICS    sfml-graphics    ${AE_LIBRARIES_DIR})
-find_library(AE_SYSTEM      sfml-system      ${AEi_LIBRARIES_DIR})
+find_library(AE_SYSTEM      sfml-system      ${AE_LIBRARIES_DIR})
 
 message("\nCheckings libraries ..." )
 message(STATUS "   ae_graphics: " ${AE_GRAPHICS})
