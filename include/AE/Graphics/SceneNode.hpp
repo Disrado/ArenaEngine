@@ -31,14 +31,6 @@ public:
               const ae::Vector2f& scale = ae::Vector2f(1, 1),
               const ae::Vector2f& origin = ae::Vector2f(),
               float angle = 0.0);
-
-    static std::shared_ptr<SceneNode>
-    create(int drawOrder = 0,
-	   const std::string& _tag = "",
-	   const ae::Vector2f& position = ae::Vector2f(),
-	   const ae::Vector2f& scale = ae::Vector2f(1, 1),
-	   const ae::Vector2f& origin = ae::Vector2f(),
-	   float angle = 0.0);
     
     std::shared_ptr<SceneNode>
     createChildSceneNode(int drawOrder = 0,
@@ -69,7 +61,8 @@ public:
     void setTag(const std::string& _tag) { tag = _tag; }
     const std::string& getTag() const { return tag; }
 
-    int getChildrenCount() const;
+    std::shared_ptr<Object> getParent() const;
+    int getChildrenCount() const { return children.size(); }
     
     void setOrigin(const Vector2f& origin);
     void setOrigin(float x, float y);

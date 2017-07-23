@@ -20,22 +20,6 @@ SceneNode::SceneNode(int _drawOrder,
     Transformable::setOrigin(origin);
     Transformable::setRotation(angle);
 }
-
-static std::shared_ptr<SceneNode>
-create(int drawOrder = 0,
-       const std::string& _tag = "",
-       const ae::Vector2f& position = ae::Vector2f(),
-       const ae::Vector2f& scale = ae::Vector2f(1, 1),
-       const ae::Vector2f& origin = ae::Vector2f(),
-       float angle = 0.0)
-{
-    return std::make_shared<SceneNode>(drawOrder,
-				       tag,
-				       position,
-				       scale,
-				       origin,
-				       angle);
-}
     
 std::shared_ptr<SceneNode>
 SceneNode::createChildSceneNode(int drawOrder,
@@ -104,7 +88,7 @@ void SceneNode::removeChild(const std::string& _tag)
 
     if(itr != children.end()) {
         (*itr)->removeParent();
-        children.erase(itr);        
+        children.erase(*itr);        
     }
 }
 
@@ -117,7 +101,7 @@ void SceneNode::removeChild(std::shared_ptr<SceneNode> _child)
 
     if(itr != children.end()) {
         (*itr)->removeParent();
-        children.erase(itr);
+        children.erase(*itr);
     }
 }
 
@@ -192,9 +176,12 @@ void SceneNode::setDrawOrder(int _drawOrder)
     }
 }
 
-int SceneNode::getChildrenCount() const
+std::shared_ptr<Object> SceneNode::getParent() const
 {
-    return children.size();
+    if(auto ptr = parent.lock())
+	return ptr;
+    else
+	return nullptr;
 }
     
 void SceneNode::setOrigin(const Vector2f& origin)
