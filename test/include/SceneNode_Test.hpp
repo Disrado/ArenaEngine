@@ -6,8 +6,6 @@
 class SceneNode_Test
 {
 public:
-    friend class SceneNode;
-    
     bool SceneNodeConstructor_Test();
     
     bool createChildSceneNode_Test();
