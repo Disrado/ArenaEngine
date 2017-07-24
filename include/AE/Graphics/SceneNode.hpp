@@ -12,15 +12,17 @@ namespace ae
 class SFML_GRAPHICS_API SceneNode : public Object,
                                     public std::enable_shared_from_this<SceneNode> 
 {
+    typedef std::shared_ptr<SceneNode> SNodePtr;
+    
 private:
     int drawOrder;
     std::string tag;
-    std::shared_ptr<SceneNode> parent;
-    std::set<std::shared_ptr<SceneNode>> children;
+    std::weak_ptr<SceneNode> parent;
+    std::set<SNodePtr> children;
     std::shared_ptr<Object> attachedObject;
           
-    void removeParent();
     void setParent(std::shared_ptr<SceneNode> _parent);
+    void removeParent();
     
 public:
     SceneNode(int _drawOrder = 0,
@@ -29,7 +31,7 @@ public:
               const ae::Vector2f& scale = ae::Vector2f(1, 1),
               const ae::Vector2f& origin = ae::Vector2f(),
               float angle = 0.0);
-
+    
     std::shared_ptr<SceneNode>
     createChildSceneNode(int drawOrder = 0,
                          const std::string& _tag = "",
@@ -39,6 +41,7 @@ public:
                          float angle = 0.0);
     
     void addChild(std::shared_ptr<SceneNode>);
+    SNodePtr getChildByTag(const std::string& _tag);
 
     void removeChild(std::shared_ptr<SceneNode> _child);
     void removeChild(const std::string& _tag);
@@ -48,16 +51,19 @@ public:
     
     void rebaseToNewParent(std::shared_ptr<SceneNode> newParent);
     void rebaseChildrenToNewParent(std::shared_ptr<SceneNode> newParent);
-    
+     
     void attachObject(std::shared_ptr<Object> object);
     std::shared_ptr<Object> detachObject();
     
     void setDrawOrder(int _drawOrder);
-    int getDrawOrder() const;
+    int getDrawOrder() const { return drawOrder; }
     
-    void setTag(const std::string& _tag);
-    const std::string& getTag() const;
+    void setTag(const std::string& _tag) { tag = _tag; }
+    const std::string& getTag() const { return tag; }
 
+    std::shared_ptr<Object> getParent() const;
+    int getChildrenCount() const { return children.size(); }
+    
     void setOrigin(const Vector2f& origin);
     void setOrigin(float x, float y);
     

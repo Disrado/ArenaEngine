@@ -13,8 +13,6 @@ SceneNode::SceneNode(int _drawOrder,
                      float angle)
     : drawOrder(_drawOrder),
       tag(_tag),
-      parent(nullptr),
-      children(std::set<std::shared_ptr<SceneNode>>()),
       attachedObject(nullptr)
 {
     Transformable::setPosition(position);
@@ -22,7 +20,7 @@ SceneNode::SceneNode(int _drawOrder,
     Transformable::setOrigin(origin);
     Transformable::setRotation(angle);
 }
-
+    
 std::shared_ptr<SceneNode>
 SceneNode::createChildSceneNode(int drawOrder,
                                 const std::string& tag,
@@ -40,56 +38,70 @@ SceneNode::createChildSceneNode(int drawOrder,
     this->addChild(newChild);
     return newChild;
 }
-    
-void SceneNode::removeParent()
-{
-    parent = nullptr;
-}
 
 void SceneNode::setParent(std::shared_ptr<SceneNode> newParent)
 {
     parent = newParent;
 }
-    
-void SceneNode::rebaseToNewParent(std::shared_ptr<SceneNode> newParent)
-{
-    if(newParent) {
-        parent->removeChild(shared_from_this());
-        newParent->addChild(shared_from_this());
-    }
-}
-    
-void SceneNode::rebaseChildrenToNewParent(std::shared_ptr<SceneNode> newParent)
-{
-    if(newParent) {
-        for(auto& child : children)
-            newParent->addChild(child);
 
-        children.clear();
+void SceneNode::removeParent()
+{
+    parent.reset();
+}
+    
+void SceneNode::addChild(std::shared_ptr<SceneNode> child)
+{
+    if(child) {
+        child->setParent(shared_from_this());
+        children.insert(child);
     }
 }
+
+std::shared_ptr<SceneNode> SceneNode::getChildByTag(const std::string& _tag)
+{
+    if(children.empty())
+	return nullptr;
+
+    auto tagComparator =
+	[&_tag](const std::shared_ptr<SceneNode> item) {
+	    return item->getTag() == _tag;
+	};
+    
+    auto itr = std::find_if(children.begin(), children.end(), tagComparator);
+    
+    if(itr != children.end())
+	return *itr;
+}	
 
 void SceneNode::removeChild(const std::string& _tag)
 {
-    auto itr = std::find_if(children.begin(), children.end(),
-                       [&_tag](const std::shared_ptr<SceneNode>& item) -> bool
-                       {
-                           return item->getTag() == _tag;
-                       });
+    if(children.empty())
+	return;
+
+    auto tagComparator =
+	[&_tag](const std::shared_ptr<SceneNode> item) {
+	    return item->getTag() == _tag;
+	};
+ 
     
+    auto itr = std::find_if(children.begin(), children.end(), tagComparator);
+
     if(itr != children.end()) {
         (*itr)->removeParent();
-        children.erase(itr);        
+        children.erase(*itr);        
     }
 }
 
 void SceneNode::removeChild(std::shared_ptr<SceneNode> _child)
 {
+    if(children.empty())
+	return;
+
     auto itr = children.find(_child);
 
     if(itr != children.end()) {
         (*itr)->removeParent();
-        children.erase(itr);
+        children.erase(*itr);
     }
 }
 
@@ -104,33 +116,45 @@ void SceneNode::removeChildren()
 void SceneNode::destroyChildrenRecursive()
 {
     for(auto& child : children) {
-        child->removeParent();
-        child->detachObject();
+	child->removeParent(); //this using instead removeChildren,
+	                       //because removeChildren will again call loop  
+	child->detachObject();
         child->destroyChildrenRecursive();
     }
-    
-    children.clear();
-}        
 
-void SceneNode::addChild(std::shared_ptr<SceneNode> child)
+    children.clear();
+}
+    
+void SceneNode::rebaseToNewParent(std::shared_ptr<SceneNode> newParent)
 {
-    if(child) {
-        child->setParent(shared_from_this());
-        children.insert(child);
+    if(newParent) {
+	if(auto ptr = parent.lock())
+	    ptr->removeChild(shared_from_this());
+	
+        newParent->addChild(shared_from_this());
     }
 }
+    
+void SceneNode::rebaseChildrenToNewParent(std::shared_ptr<SceneNode> newParent)
+{
+    if(newParent) {
+        for(auto& child : children)
+            newParent->addChild(child);
+
+        children.clear();
+    }
+}       
 
 void SceneNode::attachObject(std::shared_ptr<Object> object)
 {
-    if(object)
+    if(object) {
         attachedObject = object;
-
-    attachedObject->setOrigin(this->getOrigin());
-    std::cout << getScale().x;
-    std::cout << getScale().y;
-    attachedObject->setScale(getScale());
-    attachedObject->setPosition(this->getPosition());
-    attachedObject->setRotation(this->getRotation());
+	
+	attachedObject->setOrigin(this->getOrigin());
+	attachedObject->setScale(getScale());
+	attachedObject->setPosition(this->getPosition());
+	attachedObject->setRotation(this->getRotation());
+    }
 }
     
 std::shared_ptr<Object> SceneNode::detachObject()
@@ -145,26 +169,21 @@ std::shared_ptr<Object> SceneNode::detachObject()
     
 void SceneNode::setDrawOrder(int _drawOrder)
 {// TODO: sort children instead add/remove
-    drawOrder = _drawOrder; 
-    parent->removeChild(shared_from_this()); 
-    parent->addChild(shared_from_this());
+    drawOrder = _drawOrder;
+    if(auto ptr = parent.lock()) {
+	ptr->removeChild(shared_from_this()); 
+	ptr->addChild(shared_from_this());
+    }
 }
 
-int SceneNode::getDrawOrder() const
+std::shared_ptr<Object> SceneNode::getParent() const
 {
-    return drawOrder;
+    if(auto ptr = parent.lock())
+	return ptr;
+    else
+	return nullptr;
 }
-
-void SceneNode::setTag(const std::string& _tag)
-{
-    tag = _tag;
-}
-
-const std::string& SceneNode::getTag() const
-{
-    return tag;
-}
-
+    
 void SceneNode::setOrigin(const Vector2f& origin)
 {
     this->Transformable::setOrigin(origin);
