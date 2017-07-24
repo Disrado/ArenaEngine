@@ -71,6 +71,8 @@ std::shared_ptr<SceneNode> SceneNode::getChildByTag(const std::string& _tag)
     
     if(itr != children.end())
 	return *itr;
+    else
+	return nullptr;
 }	
 
 void SceneNode::removeChild(const std::string& _tag)
