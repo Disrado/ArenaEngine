@@ -7,25 +7,25 @@
 class SceneNode_Test : public Test
 {
 private:
-    bool SceneNodeConstructor_Test();
-    bool createChildSceneNode_Test();
-    bool addChild_Test();
-    bool removeChild_Test();
-    bool removeChildren_Test();
-    bool destroyChildrenRecursive_Test();
-    bool rebaseToNewParent_Test();
-    bool rebaseChildrenToNewParent_Test();
-    bool attachObject_Test();
-    bool detachObject_Test();
-    bool set_get_DrawOrder_Test();
-    bool set_get_Tag_Test();
-    bool setOriginRecursive_Test();
-    bool setScaleRecursive_Test();
-    bool setPositionRecursive_Test();
-    bool setRotationRecursive_Test();
-    bool moveRecursive_Test();
-    bool rotateRecursive_Test();
-    bool scaleRecursive_Test();
+    void SceneNodeConstructor_Test();
+    void createChildSceneNode_Test();
+    void addChild_Test();
+    void removeChild_Test();
+    void removeChildren_Test();
+    void destroyChildrenRecursive_Test();
+    void rebaseToNewParent_Test();
+    void rebaseChildrenToNewParent_Test();
+    void attachObject_Test();
+    void detachObject_Test();
+    void set_get_DrawOrder_Test();
+    void set_get_Tag_Test();
+    void setOriginRecursive_Test();
+    void setScaleRecursive_Test();
+    void setPositionRecursive_Test();
+    void setRotationRecursive_Test();
+    void moveRecursive_Test();
+    void rotateRecursive_Test();
+    void scaleRecursive_Test();
 
 public:
     void beginTests() override;
