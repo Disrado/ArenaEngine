@@ -1,94 +1,115 @@
 #ifndef SCENENODE_HPP
 #define SCENENODE_HPP
 
-#include <AE/Graphics/Object.hpp>
+#include <AE/Graphics/TransformableObject.hpp>
 #include <AE/Graphics/RenderWindow.hpp>
-#include <vector>
+#include <map>
+#include <unordered_map>
 #include <memory>
 
 namespace ae
 {
 
-class SceneNode;
-typedef std::shared_ptr<SceneNode> SNodeSPtr;
-
-
-class SFML_GRAPHICS_API SceneNode : public Object,
-                                    public std::enable_shared_from_this<SceneNode> 
+class SFML_GRAPHICS_API SceneNode : public Drawable, public Transformable,
+                                    public std::enable_shared_from_this<SceneNode>
 {
+public:
+    typedef std::shared_ptr<TransformableObject> TObjPtr;
+    typedef std::shared_ptr<SceneNode> SNodePtr;
+    typedef std::weak_ptr<SceneNode> ParentPtr;
+    typedef std::map<std::string, SNodePtr> SceneNodeMap;
+    typedef std::unordered_map<std::string, TObjPtr> TObjectMap;
+    
 private:
     int drawOrder;
-    std::string tag;
-    std::weak_ptr<SceneNode> parent;
-    std::vector<SNodeSPtr> children;
-    std::shared_ptr<Object> attachedObject;
-          
-    void setParent(SNodeSPtr _parent);
+    std::string name;
+    bool visible;
+    
+    ParentPtr parent;
+    SceneNodeMap children;
+    TObjectMap attachedObjects;
+
+    
+    void setParent(SNodePtr _parent);
     void removeParent();
-    void sortChildrenByDrawOrder();
+    
+    /*
+     * Set position, ratotion, origin, scale and visible this node
+     * to child(paremeter)
+     */
+    void setParentNodeParameters(SNodePtr SNode);
     
 public:
-    // This operators were removed, because create copy
-    // of node means that newNode, will be point
-    // on baseNode children i.e. own the same children
-    SceneNode(const SceneNode &other) = delete;
-    SceneNode& operator = (const SceneNode &other) = delete;
-    SceneNode(SceneNode &&other) = delete;
-    SceneNode& operator = (SceneNode &&other) = delete;
-
-    SceneNode(int drawOrder = 0,
-	      const std::string& tag = "",
-	      std::shared_ptr<Object> object = nullptr,
+    SceneNode(const std::string&  name,
+	      int                 drawOrder = 0,
+	      bool                visible = true,
 	      const ae::Vector2f& position = ae::Vector2f(),
 	      const ae::Vector2f& scale = ae::Vector2f(1, 1),
 	      const ae::Vector2f& origin = ae::Vector2f(),
-	      float angle = 0.0);
-        
-    static SNodeSPtr create(int drawOrder = 0,
-			    const std::string& tag = "",
-			    std::shared_ptr<Object> object = nullptr,
-			    const ae::Vector2f& position = ae::Vector2f(),
-			    const ae::Vector2f& scale = ae::Vector2f(1, 1),
-			    const ae::Vector2f& origin = ae::Vector2f(),
-			    float angle = 0.0);    
-    
-    // Create new Node, add it as child to this node then return it
-    SNodeSPtr createChildSceneNode(int drawOrder = 0,
-				   const std::string& tag = "",
-				   std::shared_ptr<Object> object = nullptr,
-				   const ae::Vector2f& position = ae::Vector2f(),
-				   const ae::Vector2f& scale = ae::Vector2f(1, 1),
-				   const ae::Vector2f& origin = ae::Vector2f(),
-				   float angle = 0.0);
+	      float               angle = 0.0);
 
-    void addChild(SNodeSPtr);
-    SNodeSPtr getChildByTag(const std::string& _tag);
+    ~SceneNode();
 
-    // If child was removed, his children were also removed
-    void removeChild(SNodeSPtr childToRemove);
-    void removeChild(const std::string& _tag);
+
+    static SNodePtr create(const std::string& name,
+			   int drawOrder = 0,
+			   bool visible = true,
+			   const ae::Vector2f& position = ae::Vector2f(),
+			   const ae::Vector2f& scale = ae::Vector2f(1, 1),
+			   const ae::Vector2f& origin = ae::Vector2f(),
+			   float angle = 0.0);    
     
+    /** Create new Node, add it as child to this node then return it */
+    SNodePtr createChildSceneNode(const std::string& name, int drawOrder);
+
+    bool isVisible();
+    void setVisible(bool _visible);
+    void setVisibleRecursive(bool _visible);
+    
+    void addChild(SNodePtr);
+    SNodePtr getChild(const std::string& _name);
+
+    /* 
+     * Remove child from whis node
+     * But if pointer to child was saved in other place
+     * children of child will not be deleted from children
+     */    
+    void removeChild(SNodePtr childToRemove);
+    void removeChild(const std::string& _name);
     void removeChildren();
+    
+    /*
+     * Remove child from whis node
+     * If pointer to child was saved in other place
+     * children of child will be deleted from child children
+     * Also destroy* methods detach all objects from children
+     */
+    void destroyChild(SNodePtr childToRemove);
+    void destroyChild(const std::string& _name);
+    void destroyChildren();
 
-    void rebaseToNewParent(SNodeSPtr newParent);
-    void rebaseChildrenToNewParent(SNodeSPtr newParent);
+    void rebaseToNewParent(SNodePtr newParent);
+    void rebaseChildrenToNewParent(SNodePtr newParent);
      
-    void attachObject(std::shared_ptr<Object> object);
-    std::shared_ptr<Object> detachObject();
-    const std::shared_ptr<Object> getObject();
+    void attachObject(TObjPtr object);
+    void detachObject(TObjPtr object);
+    TObjPtr detachObject(const std::string& objectName);
+    void detachAllObjects();
+    TObjPtr getAttachedObject(const std::string& objectName);
+    int numAttachedObjects();
     
     void setDrawOrder(int _drawOrder);
     int getDrawOrder() const { return drawOrder; }
     
-    void setTag(const std::string& _tag) { tag = _tag; }
-    const std::string& getTag() const { return tag; }
+    void setName(const std::string& _name) { name = _name; }
+    const std::string& getName() const { return name; }
 
-    const SNodeSPtr getParent() const;
+    const SNodePtr getParent() const;
 
-    // Return count of children of this node without grandchildren asf
+    /** Return count of children of this node without grandchildren asf */
     int getChildrenCount() const { return children.size(); }
 
-    // Return count of children of this node with grandchildren asf
+    /** Return count of children of this node with grandchildren asf */
     int getDescendantCount() const;
     
     void setOrigin(const Vector2f& origin);

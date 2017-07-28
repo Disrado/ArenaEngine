@@ -73,7 +73,10 @@ set(DRAWABLES_SRC
     ${INCROOT}/Text.hpp
     ${SRCROOT}/VertexArray.cpp
     ${INCROOT}/VertexArray.hpp
+    ${SRCROOT}/Object.cpp
     ${INCROOT}/Object.hpp
+    ${SRCROOT}/TransformableObject.cpp
+    ${INCROOT}/TransformableObject.hpp
     ${SRCROOT}/SceneNode.cpp
     ${INCROOT}/SceneNode.hpp
     ${SRCROOT}/Layer.cpp

@@ -28,7 +28,7 @@
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
-#include <AE/Graphics/Object.hpp>
+#include <AE/Graphics/TransformableObject.hpp>
 #include <AE/Graphics/Export.hpp>
 #include <AE/Graphics/VertexArray.hpp>
 #include <AE/System/Vector2.hpp>
@@ -40,7 +40,7 @@ namespace ae
 /// \brief Base class for textured shapes with outline
 ///
 ////////////////////////////////////////////////////////////
-class SFML_GRAPHICS_API Shape : public Object
+class SFML_GRAPHICS_API Shape : public TransformableObject
 {
 public:
 

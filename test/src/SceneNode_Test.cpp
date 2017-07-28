@@ -8,17 +8,32 @@ void SceneNode_Test::SceneNodeConstructor_Test()
 {
     BEGIN_TEST
     {    
-	auto SNode = ae::SceneNode();
+	auto SNode = ae::SceneNode::create();
 
-	if(SNode.getDrawOrder() != 0
-	   || SNode.getTag() != ""
-	   || SNode.getPosition() != ae::Vector2f(0, 0)
-	   || SNode.getScale() != ae::Vector2f(1, 1)
-	   || SNode.getOrigin() != SNode.getPosition()
-	   || SNode.getRotation() != 0.0)
+	if(SNode->getDrawOrder() != 0
+	   || SNode->getTag() != ""
+	   || SNode->getPosition() != ae::Vector2f(0, 0)
+	   || SNode->getScale() != ae::Vector2f(1, 1)
+	   || SNode->getOrigin() != SNode->getPosition()
+	   || SNode->getRotation() != 0.0)
 	{
 	    ERROR("Incorrect values of default parameters");
 	}
+    }
+    END_TEST
+}
+
+void SceneNodeDestructor_Test()
+{
+    BEGIN_TEST
+    {
+	ae::SceneNode SNode;
+
+	{
+	    auto child = std::make_shared<SceneNode>();
+	    SNode->addChild();
+	}
+	
     }
     END_TEST
 }
@@ -27,26 +42,29 @@ void SceneNode_Test::createChildSceneNode_Test()
 {
     BEGIN_TEST
     {
-	auto SNode = std::make_shared<ae::SceneNode>();
+	ae::SceneNode SNode;
 	
-	auto childNode = SNode->createChildSceneNode();
 	
-	std::string error;
+    // 	auto SNode = ae::SceneNode::create();
 	
-	if(!childNode)
-	{
-	    error = "Incorrect return value";
-	}
-	else if(childNode->getParent() != SNode)
-	{
-	    error = "Incorrect value of parent in child node";
-	}
-	else if(SNode->getChildrenCount() == 0)
-	{
-	    error = "Error while child edding as child to parent";
+    // 	auto childNode = SNode->createChildSceneNode();
+	
+    // 	std::string error;
+	
+    // 	if(!childNode)
+    // 	{
+    // 	    error = "Incorrect return value";
+    // 	}
+    // 	else if(childNode->getParent() != SNode)
+    // 	{
+    // 	    error = "Incorrect value of parent in child node";
+    // 	}
+    // 	else if(SNode->getChildrenCount() == 0)
+    // 	{
+    // 	    error = "Error while child edding as child to parent";
 	    
-	    ERROR(error);
-	}
+    // 	    ERROR(error);
+    // 	}
     }
     END_TEST
 }
@@ -55,7 +73,7 @@ void SceneNode_Test::addChild_Test()
 {
     BEGIN_TEST
     {
-	auto SNode = std::make_shared<ae::SceneNode>();
+	auto SNode = ae::SceneNode::create();
 	
 	auto childNode = SNode->createChildSceneNode();
 	
@@ -81,16 +99,14 @@ void SceneNode_Test::removeChild_Test()
 {
     BEGIN_TEST
     {
-	auto SNode = std::make_shared<ae::SceneNode>();
+	auto SNode = ae::SceneNode::create();
 	auto childNode = SNode->createChildSceneNode();
 	childNode->setTag("child_1");
+	auto childNode2 = childNode->createChildSceneNode();
+	childNode->setTag("child_1");
 	
-	SNode->addChild(childNode);
 	SNode->removeChild(childNode);
-	
-	SNode->addChild(childNode);
-	SNode->removeChild("child_1");
-	
+
 	std::string error;
 	
 	if(childNode->getParent() == SNode)
@@ -99,7 +115,11 @@ void SceneNode_Test::removeChild_Test()
 	}
 	else if(SNode->getChildrenCount() != 0)
 	{
-	    error =  "Error while child deleting child from parent";
+	    error =  "Error while child deleting from parent";
+	}
+	else if(childNode->getChildrenCount() != 0)
+	{
+	    error =  "Error while child deleting recursive";
 	    ERROR(error);
 	}
     }
@@ -110,26 +130,7 @@ void SceneNode_Test::removeChildren_Test()
 {
     BEGIN_TEST
     {	
-	auto SNode = std::make_shared<ae::SceneNode>();
-	
-	for(int i(0); i < 10; ++i)
-	    SNode->createChildSceneNode();
-	
-	SNode->removeChildren();
-	
-	if(SNode->getChildrenCount() != 0)
-	{
-	    ERROR("Error while deleting childredn from parent");
-	}
-    }
-    END_TEST
-}
-
-void SceneNode_Test::destroyChildrenRecursive_Test()
-{
-    BEGIN_TEST
-    {	
-	auto SNode = std::make_shared<ae::SceneNode>();
+	auto SNode = ae::SceneNode::create();
 	auto child_1_1 = SNode->createChildSceneNode();
 	auto child_1_2 = SNode->createChildSceneNode();
 	
@@ -142,7 +143,7 @@ void SceneNode_Test::destroyChildrenRecursive_Test()
 	auto sprite = std::make_shared<ae::Sprite>();
 	child_3_2->attachObject(sprite);
 	
-	SNode->destroyChildrenRecursive();
+	SNode->removeChildren();
 	
 	if(SNode->getChildrenCount() != 0 &&
 	   child_1_1->getChildrenCount() != 0 &&
@@ -156,7 +157,7 @@ void SceneNode_Test::destroyChildrenRecursive_Test()
 	{
 	    ERROR("Error while removing object from node");
 	}
-    }
+    }	
     END_TEST
 }
 
@@ -164,8 +165,8 @@ void SceneNode_Test::rebaseToNewParent_Test()
 {
     BEGIN_TEST
     {
-	auto firstParent = std::make_shared<ae::SceneNode>();
-	auto secondParent = std::make_shared<ae::SceneNode>();
+	auto firstParent = ae::SceneNode::create();
+	auto secondParent = ae::SceneNode::create();
 	
 	auto childNode = firstParent->createChildSceneNode();
 	childNode->setTag("childNode");
@@ -201,8 +202,8 @@ void SceneNode_Test::rebaseChildrenToNewParent_Test()
 {
     BEGIN_TEST
     {
-	auto first_SNode = std::make_shared<ae::SceneNode>();
-	auto second_SNode = std::make_shared<ae::SceneNode>();
+	auto first_SNode = ae::SceneNode::create();
+	auto second_SNode = ae::SceneNode::create();
 	
 	for(int i(0); i < 10; ++i)
 	    first_SNode->createChildSceneNode();
@@ -243,7 +244,7 @@ void SceneNode_Test::detachObject_Test()
 {
     BEGIN_TEST
     {
-	auto SNode = std::make_shared<ae::SceneNode>();
+	auto SNode = ae::SceneNode::create();
 	
 	auto sprite = std::make_shared<ae::Sprite>();
 	
@@ -261,7 +262,7 @@ void SceneNode_Test::set_get_DrawOrder_Test()
 {
     BEGIN_TEST
     {	
-	auto SNode = std::make_shared<ae::SceneNode>();
+	auto SNode = ae::SceneNode::create();
 	auto child_1 = SNode->createChildSceneNode();
 	
 	child_1->setDrawOrder(4);
@@ -295,7 +296,7 @@ void SceneNode_Test::setOriginRecursive_Test()
 {
     BEGIN_TEST
     {	
-	auto SNode = std::make_shared<ae::SceneNode>();
+	auto SNode = ae::SceneNode::create();
 	auto child_1 = SNode->createChildSceneNode();
 
 	auto tempChild = child_1->createChildSceneNode();
@@ -322,7 +323,7 @@ void SceneNode_Test::setScaleRecursive_Test()
 {
     BEGIN_TEST
     {	
-	auto SNode = std::make_shared<ae::SceneNode>();
+	auto SNode = ae::SceneNode::create();
 	auto child_1 = SNode->createChildSceneNode();
 
 	auto tempChild = child_1->createChildSceneNode();
@@ -349,7 +350,7 @@ void SceneNode_Test::setPositionRecursive_Test()
 {
     BEGIN_TEST
     {	
-	auto SNode = std::make_shared<ae::SceneNode>();
+	auto SNode = ae::SceneNode::create();
 	auto child_1 = SNode->createChildSceneNode();
 
 	auto tempChild = child_1->createChildSceneNode();
@@ -376,7 +377,7 @@ void SceneNode_Test::setRotationRecursive_Test()
 {
     BEGIN_TEST
     {	
-	auto SNode = std::make_shared<ae::SceneNode>();
+	auto SNode = ae::SceneNode::create();
 	auto child_1 = SNode->createChildSceneNode();
 
 	auto tempChild = child_1->createChildSceneNode();
@@ -403,7 +404,7 @@ void SceneNode_Test::moveRecursive_Test()
 {
     BEGIN_TEST
     {	
-	auto SNode = std::make_shared<ae::SceneNode>();
+	auto SNode = ae::SceneNode::create();
 	auto child_1 = SNode->createChildSceneNode();
 
 	auto tempChild = child_1->createChildSceneNode();
@@ -430,7 +431,7 @@ void SceneNode_Test::rotateRecursive_Test()
 {
     BEGIN_TEST
     {	
-	auto SNode = std::make_shared<ae::SceneNode>();
+	auto SNode = ae::SceneNode::create();
 	auto child_1 = SNode->createChildSceneNode();
     
 	auto tempChild = child_1->createChildSceneNode();
@@ -457,7 +458,7 @@ void SceneNode_Test::scaleRecursive_Test()
 {
     BEGIN_TEST
     {	
-	auto SNode = std::make_shared<ae::SceneNode>();
+	auto SNode = ae::SceneNode::create();
 	auto child_1 = SNode->createChildSceneNode();
 
 	auto tempChild = child_1->createChildSceneNode();
@@ -489,7 +490,6 @@ void SceneNode_Test::beginTests()
     addChild_Test();
     removeChild_Test();
     removeChildren_Test();
-    destroyChildrenRecursive_Test();
     rebaseToNewParent_Test();
     rebaseChildrenToNewParent_Test();
     attachObject_Test();

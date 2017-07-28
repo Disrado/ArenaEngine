@@ -4,12 +4,12 @@ namespace ae
 {
 
 Layer::Layer() :
-    rootSceneNode(std::make_shared<SceneNode>(0)),
+    rootSceneNode(std::make_shared<SceneNode>("Root")),
     drawOrder(0)
 { }
 
 Layer::Layer(int _drawOrder, const std::string& _tag) :
-    rootSceneNode(std::make_shared<SceneNode>(0)),
+    rootSceneNode(std::make_shared<SceneNode>("Root")),
     drawOrder(_drawOrder),
     tag(_tag)
 { }
@@ -42,7 +42,7 @@ void Layer::setDrawOrder(int _drawOrder)
 void Layer::clear()
 {
     rootSceneNode->removeChildren();
-    rootSceneNode->detachObject();
+    rootSceneNode->detachAllObjects();
 }
     
 void Layer::draw(RenderTarget& target, RenderStates states) const

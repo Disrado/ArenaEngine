@@ -28,7 +28,7 @@
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
-#include <AE/Graphics/Object.hpp>
+#include <AE/Graphics/TransformableObject.hpp>
 #include <AE/Graphics/Export.hpp>
 #include <AE/Graphics/Vertex.hpp>
 #include <AE/Graphics/Rect.hpp>
@@ -43,7 +43,7 @@ class Texture;
 ///        own transformations, color, etc.
 ///
 ////////////////////////////////////////////////////////////
-class SFML_GRAPHICS_API Sprite : public Object
+class SFML_GRAPHICS_API Sprite : public TransformableObject
 {
 public:
 

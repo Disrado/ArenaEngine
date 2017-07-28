@@ -8,11 +8,11 @@ class SceneNode_Test : public Test
 {
 private:
     void SceneNodeConstructor_Test();
+    void SceneNodeDestructor_Test();
     void createChildSceneNode_Test();
     void addChild_Test();
     void removeChild_Test();
     void removeChildren_Test();
-    void destroyChildrenRecursive_Test();
     void rebaseToNewParent_Test();
     void rebaseChildrenToNewParent_Test();
     void attachObject_Test();

@@ -28,7 +28,7 @@
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
-#include <AE/Graphics/Object.hpp>
+#include <AE/Graphics/TransformableObject.hpp>
 #include <AE/Graphics/Export.hpp>
 #include <AE/Graphics/Font.hpp>
 #include <AE/Graphics/Rect.hpp>
@@ -44,7 +44,7 @@ namespace ae
 /// \brief Graphical text that can be drawn to a render target
 ///
 ////////////////////////////////////////////////////////////
-class SFML_GRAPHICS_API Text : public Object
+class SFML_GRAPHICS_API Text : public TransformableObject
 {
 public:
 
