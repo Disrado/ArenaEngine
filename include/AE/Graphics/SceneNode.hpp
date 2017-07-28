@@ -3,7 +3,7 @@
 
 #include <AE/Graphics/Object.hpp>
 #include <AE/Graphics/RenderWindow.hpp>
-#include <set>
+#include <vector>
 #include <memory>
 
 namespace ae
@@ -20,26 +20,14 @@ private:
     int drawOrder;
     std::string tag;
     std::weak_ptr<SceneNode> parent;
-    std::set<SNodeSPtr> children;
+    std::vector<SNodeSPtr> children;
     std::shared_ptr<Object> attachedObject;
           
     void setParent(SNodeSPtr _parent);
     void removeParent();
-
-    // Needed for sort children, while they insert to set
-    bool operator< (const SceneNode& right)
-    {
-        return this->getDrawOrder() < right.getDrawOrder();
-    }
+    void sortChildrenByDrawOrder();
     
 public:
-    SceneNode(int _drawOrder = 0,
-              const std::string& _tag = "",
-              const ae::Vector2f& position = ae::Vector2f(),
-              const ae::Vector2f& scale = ae::Vector2f(1, 1),
-              const ae::Vector2f& origin = ae::Vector2f(),
-              float angle = 0.0);
-
     // This operators were removed, because create copy
     // of node means that newNode, will be point
     // on baseNode children i.e. own the same children
@@ -48,21 +36,38 @@ public:
     SceneNode(SceneNode &&other) = delete;
     SceneNode& operator = (SceneNode &&other) = delete;
 
+    SceneNode(int drawOrder = 0,
+	      const std::string& tag = "",
+	      std::shared_ptr<Object> object = nullptr,
+	      const ae::Vector2f& position = ae::Vector2f(),
+	      const ae::Vector2f& scale = ae::Vector2f(1, 1),
+	      const ae::Vector2f& origin = ae::Vector2f(),
+	      float angle = 0.0);
+        
+    static SNodeSPtr create(int drawOrder = 0,
+			    const std::string& tag = "",
+			    std::shared_ptr<Object> object = nullptr,
+			    const ae::Vector2f& position = ae::Vector2f(),
+			    const ae::Vector2f& scale = ae::Vector2f(1, 1),
+			    const ae::Vector2f& origin = ae::Vector2f(),
+			    float angle = 0.0);    
+    
     // Create new Node, add it as child to this node then return it
     SNodeSPtr createChildSceneNode(int drawOrder = 0,
-				  const std::string& _tag = "",
-				  const ae::Vector2f& position = ae::Vector2f(),
-				  const ae::Vector2f& scale = ae::Vector2f(1, 1),
-				  const ae::Vector2f& origin = ae::Vector2f(),
-				  float angle = 0.0);
+				   const std::string& tag = "",
+				   std::shared_ptr<Object> object = nullptr,
+				   const ae::Vector2f& position = ae::Vector2f(),
+				   const ae::Vector2f& scale = ae::Vector2f(1, 1),
+				   const ae::Vector2f& origin = ae::Vector2f(),
+				   float angle = 0.0);
 
     void addChild(SNodeSPtr);
     SNodeSPtr getChildByTag(const std::string& _tag);
 
     // If child was removed, his children were also removed
-    void removeChild(SNodeSPtr _child);
+    void removeChild(SNodeSPtr childToRemove);
     void removeChild(const std::string& _tag);
-
+    
     void removeChildren();
 
     void rebaseToNewParent(SNodeSPtr newParent);
