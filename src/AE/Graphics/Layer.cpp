@@ -41,7 +41,7 @@ void Layer::setDrawOrder(int _drawOrder)
 
 void Layer::clear()
 {
-    rootSceneNode->destroyChildrenRecursive();
+    rootSceneNode->removeChildren();
     rootSceneNode->detachObject();
 }
     
