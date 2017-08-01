@@ -25,10 +25,12 @@ file(GLOB SOURCES
 
 find_library(AE_GRAPHICS    sfml-graphics    ${AE_LIBRARIES_DIR})
 find_library(AE_SYSTEM      sfml-system      ${AE_LIBRARIES_DIR})
+find_library(AE_SYSTEM      sfml-window      ${AE_LIBRARIES_DIR})
 
 message("\nCheckings libraries ..." )
 message(STATUS "   ae_graphics: " ${AE_GRAPHICS})
 message(STATUS "     ae_system: " ${AE_SYSTEM})
+message(STATUS "     ae_window: " ${AE_WINDOW})
 message("")
 
 set(CMAKE_CXX_FLAGS "-std=c++14 -Wall")
@@ -37,4 +39,5 @@ add_executable(AE_Test ${SOURCES} ${HEADERS})
 
 target_link_libraries(AE_Test
   sfml-system
+  sfml-window
   sfml-graphics)

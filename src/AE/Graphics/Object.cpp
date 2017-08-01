@@ -50,6 +50,11 @@ bool Object::isVisible()
     return visible;
 }
 
+void Object::setDrawOrder(int _drawOrder)
+{
+    drawOrder = drawOrder;
+}
+
 void Object::detachFromParent()
 {
     if(auto pnode = parentNode.lock()) {

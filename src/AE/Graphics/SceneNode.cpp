@@ -276,12 +276,12 @@ void SceneNode::rebaseChildrenToNewParent(SNodePtr newParent)
     }
 }       
 //------------------------------------------------------------------------------
-    void SceneNode::attachObject(ObjPtr object, int drawOrder)
+void SceneNode::attachObject(ObjPtr object, int objectDrawOrder)
 {
     if(object){
 	if(!object->isAttached()) {
 	    
-	    object->setDrawOrder();
+	    object->setDrawOrder(objectDrawOrder);
 
 	    auto res = attachedObjects.insert(
 		std::make_pair(object->getName(), object));

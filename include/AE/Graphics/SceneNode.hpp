@@ -127,7 +127,7 @@ public:
     bool getVisible();
     void setVisibleRecursive(bool _visible);
      
-    void attachObject(ObjPtr object, int drawOrder = 0);
+    void attachObject(ObjPtr object, int objectDrawOrder = 0);
     void detachObject(ObjPtr object);
     ObjPtr detachObject(const std::string& objectName);
     void detachAllObjects();

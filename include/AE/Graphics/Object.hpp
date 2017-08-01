@@ -36,7 +36,7 @@ public:
     void setVisible(bool _visible);
     bool isVisible();
 
-    void setDrawOrder();
+    void setDrawOrder(int _drawOrder);
     
     void detachFromParent();
     

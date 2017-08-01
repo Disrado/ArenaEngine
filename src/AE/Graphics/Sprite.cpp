@@ -40,6 +40,11 @@ Sprite::Sprite() :
 {
 }
 
+Sprite::Sprite(const std::string& name) :
+    Object(name)
+{
+    
+}
 
 ////////////////////////////////////////////////////////////
 Sprite::Sprite(const std::string& name,
