@@ -49,6 +49,9 @@ set(SRC
     ${INCROOT}/View.hpp
     ${SRCROOT}/Vertex.cpp
     ${INCROOT}/Vertex.hpp
+    ${SRCROOT}/Node.cpp
+    ${INCROOT}/Node.hpp
+    ${INCROOT}/Updatable.hpp
 )
 if(NOT SFML_OPENGL_ES)
     list(APPEND SRC ${SRCROOT}/GLLoader.cpp)

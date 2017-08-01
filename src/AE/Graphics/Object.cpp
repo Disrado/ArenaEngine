@@ -18,7 +18,7 @@ Object::~Object()
     }
 }
 
-void Object::notifyAttached(std::shared_ptr<ae::SceneNode> _parentSNode)
+void Object::notifyAttached(std::shared_ptr<ae::Node> _parentSNode)
 {
     parentNode = _parentSNode;
     attached = true;
@@ -56,7 +56,7 @@ const std::string& Object::getName()
     return name;
 }
 
-std::shared_ptr<ae::SceneNode> Object::getParentSceneNode()
+std::shared_ptr<ae::Node> Object::getParentSceneNode()
 {
     if(attached)
 	return parentNode.lock();

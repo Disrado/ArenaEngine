@@ -8,7 +8,7 @@
 namespace ae
 {
 
-class TransformableObject : public Object, public Transformable
+class TransformableObject : public Object, 
 {
 public:
     TransformableObject(); 
