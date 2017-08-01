@@ -2,47 +2,55 @@
 #define OBJECT_HPP
 
 #include <AE/Graphics/Drawable.hpp>
-#include <AE/Graphics/Node.hpp>
+#include <AE/Graphics/Updatable.hpp>
+#include <AE/Graphics/SceneNode.hpp>
 #include <memory>
 
 
 namespace ae
 {
 
+class SceneNode;
+    
 class Object : public Drawable,
-	       public Updatable,
-	       protected Transformable
+	       public Transformable
 {
 private:
     std::string name;
     bool visible;
     bool attached;
-    bool needUpdateFromParent;
-    std::weak_ptr<ae::Node> parentNode;
+    std::weak_ptr<ae::SceneNode> parentNode;
+    // This field need only wile object attached to SceneNode
+    int drawOrder;
     
 public:
+    Object();
     Object(std::string _name, bool _visible = true);
 	   
     virtual ~Object();
 
-    void notifyAttached(std::shared_ptr<ae::Node> _parentSNode);
+    void notifyAttached(std::shared_ptr<ae::SceneNode> _parentSNode);
     void notifyDetached();
 
     bool isAttached();
     void setVisible(bool _visible);
     bool isVisible();
 
-    void setNeedUpdateFromParent();
+    void setDrawOrder();
     
     void detachFromParent();
     
     const std::string& getName();
     void setName(const std::string&);
 
-    std::shared_ptr<ae::Node> getParentSceneNode();
+    std::shared_ptr<ae::SceneNode> getParentSceneNode();
 
-    virtual void update();
     virtual void draw(RenderTarget& target, RenderStates states) const = 0;
+
+    bool operator< (const Object& right)
+    {
+        return this->drawOrder < right.drawOrder;
+    }
 };
 
 } // namespace ae

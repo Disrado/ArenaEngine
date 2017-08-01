@@ -28,7 +28,7 @@
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
-#include <AE/Graphics/TransformableObject.hpp>
+#include <AE/Graphics/Object.hpp>
 #include <AE/Graphics/Export.hpp>
 #include <AE/Graphics/Vertex.hpp>
 #include <AE/Graphics/Rect.hpp>
@@ -43,7 +43,7 @@ class Texture;
 ///        own transformations, color, etc.
 ///
 ////////////////////////////////////////////////////////////
-class SFML_GRAPHICS_API Sprite : public TransformableObject
+class SFML_GRAPHICS_API Sprite : public Object
 {
 public:
 
@@ -63,7 +63,9 @@ public:
     /// \see setTexture
     ///
     ////////////////////////////////////////////////////////////
-    explicit Sprite(const Texture& texture);
+    explicit Sprite(const std::string& name,
+		    const Texture&     texture,
+		    bool               visible = 0);
 
     ////////////////////////////////////////////////////////////
     /// \brief Construct the sprite from a sub-rectangle of a source texture
@@ -74,7 +76,10 @@ public:
     /// \see setTexture, setTextureRect
     ///
     ////////////////////////////////////////////////////////////
-    Sprite(const Texture& texture, const IntRect& rectangle);
+    Sprite(const std::string& name,
+	   const Texture&     texture,
+	   const IntRect&     rectangle,
+	   bool               visible = 0);
 
     ////////////////////////////////////////////////////////////
     /// \brief Change the source texture of the sprite

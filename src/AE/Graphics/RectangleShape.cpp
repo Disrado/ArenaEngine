@@ -32,7 +32,10 @@
 namespace ae
 {
 ////////////////////////////////////////////////////////////
-RectangleShape::RectangleShape(const Vector2f& size)
+RectangleShape::RectangleShape(const std::string& name,
+			       const Vector2f& size,
+			       bool visible) :
+    Shape(name, visible)
 {
     setSize(size);
 }

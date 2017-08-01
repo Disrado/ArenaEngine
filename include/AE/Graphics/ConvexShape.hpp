@@ -49,7 +49,9 @@ public:
     /// \param pointCount Number of points of the polygon
     ///
     ////////////////////////////////////////////////////////////
-    explicit ConvexShape(std::size_t pointCount = 0);
+    explicit ConvexShape(const std::string& name,
+			 std::size_t pointCount = 0,
+			 bool visible = 0);
 
     ////////////////////////////////////////////////////////////
     /// \brief Set the number of points of the polygon

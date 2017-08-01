@@ -30,8 +30,12 @@
 
 namespace ae
 {
+    
 ////////////////////////////////////////////////////////////
-ConvexShape::ConvexShape(std::size_t pointCount)
+ConvexShape::ConvexShape(const std::string& name,
+			 std::size_t pointCount,
+			 bool visible) :
+    Shape(name, visible)
 {
     setPointCount(pointCount);
 }

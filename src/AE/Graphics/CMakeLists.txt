@@ -49,8 +49,6 @@ set(SRC
     ${INCROOT}/View.hpp
     ${SRCROOT}/Vertex.cpp
     ${INCROOT}/Vertex.hpp
-    ${SRCROOT}/Node.cpp
-    ${INCROOT}/Node.hpp
     ${INCROOT}/Updatable.hpp
 )
 if(NOT SFML_OPENGL_ES)
@@ -78,8 +76,6 @@ set(DRAWABLES_SRC
     ${INCROOT}/VertexArray.hpp
     ${SRCROOT}/Object.cpp
     ${INCROOT}/Object.hpp
-    ${SRCROOT}/TransformableObject.cpp
-    ${INCROOT}/TransformableObject.hpp
     ${SRCROOT}/SceneNode.cpp
     ${INCROOT}/SceneNode.hpp
     ${SRCROOT}/Layer.cpp

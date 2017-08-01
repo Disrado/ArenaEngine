@@ -9,7 +9,8 @@ namespace ae
 namespace
 {
     typedef ae::SceneNode::SNodePtr SNodePtr;
-    typedef ae::SceneNode::TObjPtr TObjPtr;
+    typedef ae::SceneNode::ObjPtr ObjPtr;
+    typedef ae::SceneNode::Parameters Parameters;
 }
     
 //------------------------------------------------------------------------------    
@@ -19,7 +20,7 @@ SceneNode::SceneNode(const std::string&  _name,
 		     const ae::Vector2f& position,
 		     const ae::Vector2f& scale,
 		     const ae::Vector2f& origin,
-		     float               angle)
+		     float               rotation)
     : name(_name),
       drawOrder(_drawOrder),
       visible(visible)
@@ -27,7 +28,7 @@ SceneNode::SceneNode(const std::string&  _name,
     Transformable::setPosition(position);
     Transformable::setScale(scale);
     Transformable::setOrigin(origin);
-    Transformable::setRotation(angle);
+    Transformable::setRotation(rotation);
 }
 //------------------------------------------------------------------------------
 SceneNode::~SceneNode()
@@ -46,8 +47,8 @@ SNodePtr SceneNode::createChildSceneNode(const std::string& name,
 {
     auto newChild = std::make_shared<SceneNode>(name, drawOrder);
 
-    setParentNodeParameters(newChild);
-    
+    newChild->setParentParameters(this->getParameters());
+
     this->addChild(newChild);
     
     return newChild;
@@ -59,10 +60,10 @@ SNodePtr SceneNode::create(const std::string&  name,
 			   const ae::Vector2f& position,
 			   const ae::Vector2f& scale,
 			   const ae::Vector2f& origin,
-			   float               angle)
+			   float               rotation)
 {
     return std::make_shared<SceneNode>(name, drawOrder, visible,
-				       position, scale, origin, angle);
+				       position, scale, origin, rotation);
 }
 //------------------------------------------------------------------------------
 void SceneNode::setParent(SNodePtr newParent)
@@ -75,15 +76,20 @@ void SceneNode::removeParent()
     parent.reset();
 }
 //------------------------------------------------------------------------------
-void SceneNode::setParentNodeParameters(SNodePtr SNode)
+const Parameters SceneNode::getParameters()
 {
-    SNode->setOrigin(getOrigin());
-    SNode->setScale(getScale());
-    SNode->setPosition(getPosition());
-    SNode->setRotation(getRotation());
-    SNode->setVisible(visible);
+    return Parameters(shared_from_this());
 }
-//------------------------------------------------------------------------------ 
+//------------------------------------------------------------------------------
+void SceneNode::setParentParameters(const Parameters& param)
+{
+    this->setPosition(param.position);
+    this->setScale(param.scale);
+    this->setOrigin(param.origin);
+    this->setRotation(param.rotation);
+    this->setVisible(param.visible);
+}
+//------------------------------------------------------------------------------
 bool SceneNode::isVisible()
 {
     return visible;
@@ -95,6 +101,11 @@ void SceneNode::setVisible(bool _visible)
 
     for(auto& obj : attachedObjects)
 	obj.second->setVisible(_visible);
+}
+//------------------------------------------------------------------------------
+bool SceneNode::getVisible()
+{
+    return visible;
 }
 //------------------------------------------------------------------------------
 void SceneNode::setVisibleRecursive(bool _visible)
@@ -111,17 +122,16 @@ void SceneNode::setVisibleRecursive(bool _visible)
 void SceneNode::addChild(SNodePtr child)
 {
     if(child) {
-	SNodePtr parent(nullptr);
-	if(parent = child->parent.lock()) {
+	SNodePtr parent = parent = child->parent.lock();
+	if(!parent) {
 
-	    auto res = children.insert(
-		std::make_pair(child->getName(), child));
+	    auto res = children.insert(std::make_pair(child->name, child));
 
 	    if(res.second) {
 		child->setParent(shared_from_this());
-		setParentNodeParameters(child);
+		child->setParentParameters(this->getParameters());
 	    } else {
-		ae::Logger::getInstance().write(
+		Logger::getInstance().write(
 		    "WARNING",
 		    "Node " + child->name +
 		    "was not attached because an node of the "
@@ -129,7 +139,7 @@ void SceneNode::addChild(SNodePtr child)
 	    }
 
 	} else {
-	    ae::Logger::getInstance().write(
+	    Logger::getInstance().write(
 		"WARNING",
 		"SceneNode " + child->name +
 		"already was a child of " + parent->name);
@@ -147,7 +157,7 @@ SNodePtr SceneNode::getChild(const std::string& _name)
     if(itr != children.end()) {
 	return itr->second;
     } else {
-	ae::Logger::getInstance().write(
+	Logger::getInstance().write(
 	    "WARNING",
 	    "Child node named " + _name + "does not exist in " + name);
 	
@@ -266,21 +276,25 @@ void SceneNode::rebaseChildrenToNewParent(SNodePtr newParent)
     }
 }       
 //------------------------------------------------------------------------------
-void SceneNode::attachObject(TObjPtr object)
+    void SceneNode::attachObject(ObjPtr object, int drawOrder)
 {
     if(object){
 	if(!object->isAttached()) {
+	    
+	    object->setDrawOrder();
 
 	    auto res = attachedObjects.insert(
 		std::make_pair(object->getName(), object));
 
 	    if(res.second) {
 		object->notifyAttached(shared_from_this());
-	    
+
 		object->setOrigin(getOrigin());
 		object->setScale(getScale());
 		object->setPosition(getPosition());
 		object->setRotation(getRotation());
+		object->setVisible(visible);
+		
 	    } else {
 		ae::Logger::getInstance().write(
 		    "WARNING",
@@ -299,7 +313,7 @@ void SceneNode::attachObject(TObjPtr object)
     }
 }
 //------------------------------------------------------------------------------	    
-void SceneNode::detachObject(TObjPtr object)
+void SceneNode::detachObject(ObjPtr object)
 {
     auto itr = attachedObjects.find(object->getName());
 
@@ -314,7 +328,7 @@ void SceneNode::detachObject(TObjPtr object)
     }
 }
 //------------------------------------------------------------------------------    
-TObjPtr SceneNode::detachObject(const std::string& objectName)
+ObjPtr SceneNode::detachObject(const std::string& objectName)
 {
     auto itr = attachedObjects.find(objectName);
 
@@ -338,7 +352,7 @@ void SceneNode::detachAllObjects()
     attachedObjects.clear();	
 }
 //------------------------------------------------------------------------------    
-TObjPtr SceneNode::getAttachedObject(const std::string& objectName)
+ObjPtr SceneNode::getAttachedObject(const std::string& objectName)
 {
     auto itr = attachedObjects.find(objectName);
     
@@ -433,7 +447,7 @@ void SceneNode::move(const Vector2f& offset)
 {
     this->Transformable::move(offset);
     for(auto& obj : attachedObjects)
-        obj.second->move (offset);
+        obj.second->setPosition(offset);
 }
 //------------------------------------------------------------------------------
 void SceneNode::move(float offsetX, float offsetY)
@@ -560,7 +574,7 @@ void SceneNode::moveRecursive(float offsetX, float offsetY)
 	obj.second->move(offsetX, offsetY);
 
     for(auto& child : children)
-        child.second->moveRecursive(offsetX, offsetY);
+        child.second->move(offsetX, offsetY);
 }
 //------------------------------------------------------------------------------
 void SceneNode::rotateRecursive(const float angle)
@@ -594,7 +608,7 @@ void SceneNode::scaleRecursive(float factorX, float factorY)
 
     for(auto& child : children)
         child.second->scaleRecursive(factorX, factorY);
-}        
+}
 //------------------------------------------------------------------------------
 void SceneNode::draw(RenderTarget& target, RenderStates states) const
 {

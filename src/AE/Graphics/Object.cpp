@@ -3,13 +3,19 @@
 namespace ae
 {
 
-Object::Object(std::string _name, bool _visible) :
-    name(_name),
-    visible(_visible),
-    attached(false)
-{
+Object::Object() :
+    name    (),
+    visible (true),
+    attached(false),
+    drawOrder(0)
+{ }
     
-}
+Object::Object(std::string _name, bool _visible) :
+    name    (_name),
+    visible (_visible),
+    attached(false),
+    drawOrder(0)
+{ }
 
 Object::~Object()
 {
@@ -18,7 +24,7 @@ Object::~Object()
     }
 }
 
-void Object::notifyAttached(std::shared_ptr<ae::Node> _parentSNode)
+void Object::notifyAttached(std::shared_ptr<ae::SceneNode> _parentSNode)
 {
     parentNode = _parentSNode;
     attached = true;
@@ -56,7 +62,12 @@ const std::string& Object::getName()
     return name;
 }
 
-std::shared_ptr<ae::Node> Object::getParentSceneNode()
+void Object::setName(const std::string& _name)
+{
+    name = _name;
+}
+
+std::shared_ptr<ae::SceneNode> Object::getParentSceneNode()
 {
     if(attached)
 	return parentNode.lock();

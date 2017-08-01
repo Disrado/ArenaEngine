@@ -7,10 +7,10 @@ namespace ae
 class Updatable
 {
 public:
-    virtual ~Drawable() {}
+    virtual ~Updatable() {}
 
 protected:
-    virtual void update() const = 0;
+    virtual void update() = 0;
 };
 
 } // namespace ae
