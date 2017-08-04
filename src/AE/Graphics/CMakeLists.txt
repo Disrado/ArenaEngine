@@ -78,6 +78,8 @@ set(DRAWABLES_SRC
     ${INCROOT}/Object.hpp
     ${SRCROOT}/SceneNode.cpp
     ${INCROOT}/SceneNode.hpp
+    ${SRCROOT}/RootSceneNode.cpp
+    ${INCROOT}/RootSceneNode.hpp
     ${SRCROOT}/Layer.cpp
     ${INCROOT}/Layer.hpp
     ${SRCROOT}/Scene.cpp

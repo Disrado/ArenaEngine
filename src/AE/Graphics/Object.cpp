@@ -53,6 +53,10 @@ bool Object::isVisible()
 void Object::setDrawOrder(int _drawOrder)
 {
     drawOrder = drawOrder;
+
+    if(auto pnode = parentNode.lock()) {
+	pnode->setNeedUpdateObjectQueue();
+    }
 }
 
 void Object::detachFromParent()

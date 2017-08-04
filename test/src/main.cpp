@@ -30,10 +30,28 @@ int main()
     
     auto scene = std::make_shared<ae::Scene>();
     auto layer = scene->createLayer(0, "firstLayer");
-    auto node = layer->getRootSceneNode()->createChildSceneNode("firstNode", 0);
-    node->setPositionRecursive(renderWindow->getSize().x / 2,
-			       renderWindow->getSize().y / 2);
+    std::shared_ptr<ae::SceneNode> node[4];
 
+    layer->getRootSceneNode()->setPosition(renderWindow->getSize().x / 2,
+					   renderWindow->getSize().y / 2);
+
+    
+    for(int i = 0; i < 4; ++i) {
+	node[i] = layer->getRootSceneNode()->createChildSceneNode(std::to_string(i), 0);
+	node[i]->setDrawOrder(4 - i);
+    }
+
+    node[0]->setPosition(node[0]->getParent()->getPosition().x - 100,
+			 node[0]->getParent()->getPosition().y - 100);
+    node[1]->setPosition(node[1]->getParent()->getPosition().x + 100,
+			 node[1]->getParent()->getPosition().y - 100);
+    node[2]->setPosition(node[2]->getParent()->getPosition().x - 100,
+			 node[2]->getParent()->getPosition().y + 100);
+    node[3]->setPosition(node[3]->getParent()->getPosition().x + 100,
+			 node[3]->getParent()->getPosition().y + 100);
+
+    
+	    
     ae::SceneManager smgr;
     smgr.addScene(scene);
     
@@ -41,10 +59,10 @@ int main()
     texture.loadFromFile("test_image.png");
 
     
-    std::shared_ptr<ae::Sprite> sprites[1000];
-    for(int i = 0; i < 1000; ++i) {
+    std::shared_ptr<ae::Sprite> sprites[4];
+    for(int i = 0; i < 4; ++i) {
 	sprites[i] = std::make_shared<ae::Sprite>(std::to_string(i), texture, true);
-	node->attachObject(sprites[i], 0);
+	node[i]->attachObject(sprites[i], 0);
     }
     
 
@@ -61,16 +79,16 @@ int main()
         }
 
 	if (ae::Keyboard::isKeyPressed(ae::Keyboard::Left)) {
-	    node->move(-0.1, 0);
+	    layer->getRootSceneNode()->moveRecursive(-0.1, 0);
 	}
 	if (ae::Keyboard::isKeyPressed(ae::Keyboard::Right)) {
-	    node->move(0.1, 0);
+	    layer->getRootSceneNode()->moveRecursive(0.1, 0);
 	}
 	if (ae::Keyboard::isKeyPressed(ae::Keyboard::Up)) {
-	    node->move(0, -0.1);
+	    layer->getRootSceneNode()->moveRecursive(0, -0.1);
 	}
 	if (ae::Keyboard::isKeyPressed(ae::Keyboard::Down)) {
-	    node->move(0, 0.1);
+	    layer->getRootSceneNode()->moveRecursive(0, 0.1);
 	} 
 	
         renderWindow->clear();

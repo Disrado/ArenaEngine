@@ -50,6 +50,7 @@ SNodePtr SceneNode::createChildSceneNode(const std::string& name,
     newChild->setParentParameters(this->getParameters());
 
     this->addChild(newChild);
+    setNeedUpdateChildrenQueue();
     
     return newChild;
 }
@@ -88,6 +89,51 @@ void SceneNode::setParentParameters(const Parameters& param)
     this->setOrigin(param.origin);
     this->setRotation(param.rotation);
     this->setVisible(param.visible);
+
+    for(auto& child : children)
+	child->setParentParameters(param);
+}
+//------------------------------------------------------------------------------
+void SceneNode::setNeedUpdateChildrenQueue()
+{
+    needUpdateChildrenQueue = true;
+}
+//------------------------------------------------------------------------------
+void SceneNode::setNeedUpdateObjectQueue()
+{
+    needUpdateObjectQueue = true;
+}
+//------------------------------------------------------------------------------
+void SceneNode::updateChildrenQueue()
+{
+    childrenQueue.clear();
+    childrenQueue.resize(children.size());
+
+    for(auto child : children)
+	if(child->isVisible())
+	    childrenQueue.push_back(child.second);
+
+    childrenQueue.shrink_to_fit();
+    
+    std::sort(childrenQueue.begin(), childrenQueue.end(),
+	      [](SNodePtr lhs, SNodePtr rhs) -> bool {
+		  return lhs->getDrawOrder() < rhs->getDrawOrder();
+	      });
+}
+//------------------------------------------------------------------------------
+void SceneNode::updateObjectQueue()
+{
+    objectsQueue.clear();
+    objectsQueue.resize(attachedObjects.size());
+
+    for(auto obj : attachedObjects)
+	if(obj->isVisible())
+	    objectsQueue.push_back(obj.second);
+    
+    std::sort(objectsQueue.begin(), objectsQueue.end(),
+	      [](ObjPtr lhs, ObjPtr rhs) -> bool {
+		  return lhs->getDrawOrder() < rhs->getDrawOrder();
+	      });
 }
 //------------------------------------------------------------------------------
 bool SceneNode::isVisible()
@@ -101,6 +147,8 @@ void SceneNode::setVisible(bool _visible)
 
     for(auto& obj : attachedObjects)
 	obj.second->setVisible(_visible);
+
+    setNeedUpdateChildrenQueue();
 }
 //------------------------------------------------------------------------------
 bool SceneNode::getVisible()
@@ -116,7 +164,9 @@ void SceneNode::setVisibleRecursive(bool _visible)
 	obj.second->setVisible(_visible);
 
     for(auto& child : children)
-	child.second->setVisible(_visible);
+	child.second->setVisibleRecusive(_visible);
+
+    setNeedUpdateChildrenQueue();
 }
 //------------------------------------------------------------------------------    
 void SceneNode::addChild(SNodePtr child)
@@ -130,6 +180,8 @@ void SceneNode::addChild(SNodePtr child)
 	    if(res.second) {
 		child->setParent(shared_from_this());
 		child->setParentParameters(this->getParameters());
+
+		setNeedUpdateChildrenQueue();
 	    } else {
 		Logger::getInstance().write(
 		    "WARNING",
@@ -175,6 +227,8 @@ void SceneNode::removeChild(SNodePtr childToRemove)
     if(itr != children.end()) {
         itr->second->removeParent();
         children.erase(itr);
+
+	setNeedUpdateChildrenQueue();
     } else {
 	ae::Logger::getInstance().write(
 	    "WARNING",
@@ -193,6 +247,8 @@ void SceneNode::removeChild(const std::string& _name)
     if(itr != children.end()) {
         itr->second->removeParent();
         children.erase(itr);
+
+	setNeedUpdateChildrenQueue();
     } else {
 	ae::Logger::getInstance().write(
 	    "WARNING",
@@ -206,6 +262,7 @@ void SceneNode::removeChildren()
         child.second->removeParent();
     
     children.clear();
+    setNeedUpdateChildrenQueue();
 }
 //------------------------------------------------------------------------------
 void SceneNode::destroyChild(SNodePtr childToRemove)
@@ -219,6 +276,8 @@ void SceneNode::destroyChild(SNodePtr childToRemove)
         itr->second->removeParent();
 	itr->second->destroyChildren();
         children.erase(itr);
+
+	setNeedUpdateChildrenQueue();
     } else {
 	ae::Logger::getInstance().write(
 	    "WARNING",
@@ -238,6 +297,8 @@ void SceneNode::destroyChild(const std::string& _name)
         itr->second->removeParent();
 	itr->second->destroyChildren();
         children.erase(itr);
+
+	setNeedUpdateChildrenQueue();
     } else {
 	ae::Logger::getInstance().write(
 	    "WARNING",
@@ -254,6 +315,7 @@ void SceneNode::destroyChildren()
     }
     
     children.clear();
+    setNeedUpdateChildrenQueue();
 }
 //------------------------------------------------------------------------------
 void SceneNode::rebaseToNewParent(SNodePtr newParent)
@@ -294,7 +356,8 @@ void SceneNode::attachObject(ObjPtr object, int objectDrawOrder)
 		object->setPosition(getPosition());
 		object->setRotation(getRotation());
 		object->setVisible(visible);
-		
+
+		setNeedUpdateObjectQueue();
 	    } else {
 		ae::Logger::getInstance().write(
 		    "WARNING",
@@ -320,6 +383,7 @@ void SceneNode::detachObject(ObjPtr object)
     if(itr != attachedObjects.end()) {
 	attachedObjects.erase(itr);
 	object->notifyDetached();
+	setNeedUpdateObjectQueue();
     } else {
 	ae::Logger::getInstance().write(
 	    "WARNING",
@@ -336,6 +400,7 @@ ObjPtr SceneNode::detachObject(const std::string& objectName)
 	auto ret = itr->second;
 	attachedObjects.erase(itr);
 	ret->notifyDetached();
+	setNeedUpdateObjectQueue();
 	return ret;
     } else {
 	ae::Logger::getInstance().write(
@@ -349,7 +414,8 @@ void SceneNode::detachAllObjects()
     for(auto& obj : attachedObjects)
 	obj.second->notifyDetached();
 
-    attachedObjects.clear();	
+    attachedObjects.clear();
+    setNeedUpdateObjectQueue();
 }
 //------------------------------------------------------------------------------    
 ObjPtr SceneNode::getAttachedObject(const std::string& objectName)
@@ -377,6 +443,7 @@ void SceneNode::setDrawOrder(int _drawOrder)
     if(auto ptr = parent.lock()) {
 	ptr->removeChild(shared_from_this());
 	ptr->addChild(shared_from_this());
+	ptr->setNeedUpdateChildrenQueue();
     }	
 }
 //------------------------------------------------------------------------------
@@ -610,17 +677,25 @@ void SceneNode::scaleRecursive(float factorX, float factorY)
         child.second->scaleRecursive(factorX, factorY);
 }
 //------------------------------------------------------------------------------
-void SceneNode::draw(RenderTarget& target, RenderStates states) const
+void SceneNode::update()
 {
-    for(auto& child : children) {
-	if(child.second->isVisible())
-	    child.second->draw(target, states);
+    if(needUpdateChildrenQueue) {
+	updateChildrenQueue();
     }
 
-    for(auto& obj : attachedObjects) {
-	if(obj.second->isVisible())
-	    obj.second->draw(target, states);
+    if(needUpdateObjectQueue) {
+	updateObjectQueue();
     }
+	
+}
+//------------------------------------------------------------------------------
+void SceneNode::draw(RenderTarget& target, RenderStates states) const
+{
+    for(auto& child : childrenQueue)
+	child->draw(target, states);
+
+    for(auto& obj : objectsQueue)
+	obj->draw(target, states);
 }
     
 } // namespace ae

@@ -1,7 +1,7 @@
 #ifndef LAYER_HPP
 #define LAYER_HPP
 
-#include <AE/Graphics/SceneNode.hpp>
+#include <AE/Graphics/RootSceneNode.hpp>
 #include <AE/Graphics/Drawable.hpp>
 #include <memory>
 
@@ -11,7 +11,7 @@ namespace ae
 class SFML_GRAPHICS_API Layer : public Drawable
 { 
 private:
-    std::shared_ptr<SceneNode> rootSceneNode;
+    std::shared_ptr<RootSceneNode> rootSceneNode;
     int drawOrder;
     std::string tag;
     
@@ -19,7 +19,7 @@ public:
     Layer();
     Layer(int _drawOrder, const std::string& _tag);
     
-    std::shared_ptr<SceneNode> getRootSceneNode();
+    std::shared_ptr<RootSceneNode> getRootSceneNode();
 
     void setTag(const std::string& _tag);
     const std::string& getTag();

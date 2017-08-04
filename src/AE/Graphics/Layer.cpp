@@ -4,17 +4,16 @@ namespace ae
 {
 
 Layer::Layer() :
-    rootSceneNode(std::make_shared<SceneNode>("Root")),
-    drawOrder(0)
+    rootSceneNode(std::make_shared<RootSceneNode>())
 { }
 
 Layer::Layer(int _drawOrder, const std::string& _tag) :
-    rootSceneNode(std::make_shared<SceneNode>("Root")),
+    rootSceneNode(std::make_shared<RootSceneNode>()),
     drawOrder(_drawOrder),
     tag(_tag)
 { }
 
-std::shared_ptr<SceneNode> Layer::getRootSceneNode()
+std::shared_ptr<RootSceneNode> Layer::getRootSceneNode()
 {
     return rootSceneNode;
 }
