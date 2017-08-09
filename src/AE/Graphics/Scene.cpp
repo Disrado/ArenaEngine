@@ -73,6 +73,12 @@ void Scene::changeDrawOrder(std::shared_ptr<Layer> layer, int newDrawOrder)
     }
 }
 
+void Scene::update()
+{
+    for(auto layer : layers)
+        layer->update();
+}
+    
 void Scene::draw(RenderTarget& target, RenderStates states) const
 {
     for(auto layer : layers)

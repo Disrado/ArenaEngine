@@ -54,6 +54,14 @@ namespace
 
 namespace ae
 {
+
+Shape::Shape(const std::string name, bool visible) :
+    Object(name, visible)
+{
+    
+}
+
+    
 ////////////////////////////////////////////////////////////
 Shape::~Shape()
 {

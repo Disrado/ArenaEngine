@@ -32,9 +32,13 @@
 namespace ae
 {
 ////////////////////////////////////////////////////////////
-CircleShape::CircleShape(float radius, std::size_t pointCount) :
-m_radius    (radius),
-m_pointCount(pointCount)
+CircleShape::CircleShape(const std::string& name,
+			 float radius,
+			 std::size_t pointCount,
+			 bool visible) :
+    Shape(name, visible),
+    m_radius    (radius),
+    m_pointCount(pointCount)
 {
     update();
 }

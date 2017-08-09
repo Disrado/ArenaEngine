@@ -35,25 +35,37 @@ namespace ae
 {
 ////////////////////////////////////////////////////////////
 Sprite::Sprite() :
-m_texture    (NULL),
-m_textureRect()
+    m_texture    (NULL),
+    m_textureRect()
 {
 }
 
+Sprite::Sprite(const std::string& name) :
+    Object(name)
+{
+    
+}
 
 ////////////////////////////////////////////////////////////
-Sprite::Sprite(const Texture& texture) :
-m_texture    (NULL),
-m_textureRect()
+Sprite::Sprite(const std::string& name,
+	       const Texture&     texture,
+	       bool               visible) :
+    Object(name, visible),
+    m_texture    (NULL),
+    m_textureRect()
 {
     setTexture(texture);
 }
 
 
 ////////////////////////////////////////////////////////////
-Sprite::Sprite(const Texture& texture, const IntRect& rectangle) :
-m_texture    (NULL),
-m_textureRect()
+Sprite::Sprite(const std::string& name,
+	       const Texture&     texture,
+	       const IntRect&     rectangle,
+	       bool               visible) :
+    Object(name, visible),
+    m_texture    (NULL),
+    m_textureRect()
 {
     setTexture(texture);
     setTextureRect(rectangle);

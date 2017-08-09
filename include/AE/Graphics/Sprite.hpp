@@ -54,7 +54,8 @@ public:
     ///
     ////////////////////////////////////////////////////////////
     Sprite();
-
+    
+    Sprite(const std::string& name);
     ////////////////////////////////////////////////////////////
     /// \brief Construct the sprite from a source texture
     ///
@@ -63,7 +64,9 @@ public:
     /// \see setTexture
     ///
     ////////////////////////////////////////////////////////////
-    explicit Sprite(const Texture& texture);
+    explicit Sprite(const std::string& name,
+		    const Texture&     texture,
+		    bool               visible = 0);
 
     ////////////////////////////////////////////////////////////
     /// \brief Construct the sprite from a sub-rectangle of a source texture
@@ -74,7 +77,10 @@ public:
     /// \see setTexture, setTextureRect
     ///
     ////////////////////////////////////////////////////////////
-    Sprite(const Texture& texture, const IntRect& rectangle);
+    Sprite(const std::string& name,
+	   const Texture&     texture,
+	   const IntRect&     rectangle,
+	   bool               visible = 0);
 
     ////////////////////////////////////////////////////////////
     /// \brief Change the source texture of the sprite

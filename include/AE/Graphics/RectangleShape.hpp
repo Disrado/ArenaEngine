@@ -47,7 +47,9 @@ public:
     /// \param size Size of the rectangle
     ///
     ////////////////////////////////////////////////////////////
-    explicit RectangleShape(const Vector2f& size = Vector2f(0, 0));
+    explicit RectangleShape(const std::string& name,
+			    const Vector2f& size = Vector2f(0, 0),
+			    bool visible = true);
 
     ////////////////////////////////////////////////////////////
     /// \brief Set the size of the rectangle

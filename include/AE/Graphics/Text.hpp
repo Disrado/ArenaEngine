@@ -84,7 +84,11 @@ public:
     /// \param characterSize  Base size of characters, in pixels
     ///
     ////////////////////////////////////////////////////////////
-    Text(const String& string, const Font& font, unsigned int characterSize = 30);
+    Text(const std::string& name,
+	 const String&      string,
+	 const Font&        font,
+	 unsigned int       characterSize = 30,
+	 bool               visible = true);
 
     ////////////////////////////////////////////////////////////
     /// \brief Set the text's string

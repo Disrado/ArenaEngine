@@ -38,6 +38,12 @@ void SceneManager::replaceCurrentScene(std::shared_ptr<Scene> newScene)
     currentScene = newScene;
 }
 
+void SceneManager::updateCurrentScene()
+{
+    if(currentScene)
+        currentScene->update();
+}
+    
 void SceneManager::drawCurrentScene(std::shared_ptr<ae::RenderWindow> renderWindow)
 {
     if(currentScene)

@@ -25,6 +25,7 @@ public:
     void changeDrawOrder(const std::string& tag, int newDrawOrder);
     void changeDrawOrder(std::shared_ptr<Layer> layer, int newDrawOrder);
 
+    void update();
     virtual void draw(RenderTarget& target, RenderStates states) const override;
 };
 
