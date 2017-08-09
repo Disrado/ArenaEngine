@@ -4,6 +4,7 @@
 #include <AE/Graphics/Drawable.hpp>
 #include <AE/Graphics/Updatable.hpp>
 #include <AE/Graphics/SceneNode.hpp>
+#include <AE/Graphics/Transformable.hpp>
 #include <memory>
 
 
@@ -12,7 +13,7 @@ namespace ae
 
 class SceneNode;
     
-class Object : public Drawable,
+class SFML_GRAPHICS_API Object : public Drawable,
 	       public Transformable
 {
 private:
@@ -36,7 +37,8 @@ public:
     void setVisible(bool _visible);
     bool isVisible();
 
-    void setDrawOrder(int _drawOrder);
+    void setDrawOrder(int newDrawOrder);
+    int getDrawOrder();
     
     void detachFromParent();
     

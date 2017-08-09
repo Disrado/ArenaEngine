@@ -18,6 +18,8 @@ public:
 		  const ae::Vector2f& origin = ae::Vector2f(),
 		  float               rotaion = 0.0);
 
+
+    
     void draw(RenderTarget& target, RenderStates states) const;
     
 private:

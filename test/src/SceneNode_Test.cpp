@@ -1,508 +1,408 @@
-#include <SceneNode_Test.hpp>
 #include <AE/Graphics.hpp>
 #include <memory>
 #include <iostream>
 #include <string>
+#include <gtest/gtest.h>
 
-// void SceneNode_Test::SceneNodeConstructor_Test()
-// {
-//     BEGIN_TEST
-//     {    
-// 	auto SNode = ae::SceneNode::create();
+//------------------------------------------------------------------------------
+TEST(SceneNodeTest, createChild)
+{
+    auto SNode = ae::SceneNode::create("SNode");
+    auto childNode = SNode->createChildSceneNode("childNode");
+	
+    ASSERT_TRUE(childNode)
+        << "Incorrect return value";
 
-// 	if(SNode->getDrawOrder() != 0
-// 	   || SNode->getTag() != ""
-// 	   || SNode->getPosition() != ae::Vector2f(0, 0)
-// 	   || SNode->getScale() != ae::Vector2f(1, 1)
-// 	   || SNode->getOrigin() != SNode->getPosition()
-// 	   || SNode->getRotation() != 0.0)
-// 	{
-// 	    ERROR("Incorrect values of default parameters");
-// 	}
-//     }
-//     END_TEST
-// }
+    ASSERT_EQ(childNode->getParent(), SNode)
+        << "Incorrect value of parent in child node";
 
-// void SceneNodeDestructor_Test()
-// {
-//     BEGIN_TEST
-//     {
-// 	ae::SceneNode SNode;
+    ASSERT_NE(SNode->getChildrenCount(), 0)
+        << "Error while child edding as child to parent";
+}
+//------------------------------------------------------------------------------
+TEST(SceneNodeTest, addChild)
+{
+    auto SNode = ae::SceneNode::create("SNode");
+    auto childNode = ae::SceneNode::create("childNode");
 
-// 	{
-// 	    auto child = std::make_shared<SceneNode>();
-// 	    SNode->addChild();
-// 	}
+    SNode->addChild(childNode);
 	
-//     }
-//     END_TEST
-// }
+    ASSERT_EQ(childNode->getParent(), SNode)
+        << "Incorrect value of parent in child node";
 
-// void SceneNode_Test::createChildSceneNode_Test()
-// {
-//     BEGIN_TEST
-//     {
-// 	ae::SceneNode SNode;
+    ASSERT_NE(SNode->getChildrenCount(), 0)
+        << "Error while child edding as child to parent";
+}
+//------------------------------------------------------------------------------
+TEST(SceneNodeTest, removeChild)
+{
+    auto SNode = ae::SceneNode::create("SNode");
+    auto childNode = SNode->createChildSceneNode("child_1");
 	
+    SNode->removeChild(childNode);
 	
-//     // 	auto SNode = ae::SceneNode::create();
-	
-//     // 	auto childNode = SNode->createChildSceneNode();
-	
-//     // 	std::string error;
-	
-//     // 	if(!childNode)
-//     // 	{
-//     // 	    error = "Incorrect return value";
-//     // 	}
-//     // 	else if(childNode->getParent() != SNode)
-//     // 	{
-//     // 	    error = "Incorrect value of parent in child node";
-//     // 	}
-//     // 	else if(SNode->getChildrenCount() == 0)
-//     // 	{
-//     // 	    error = "Error while child edding as child to parent";
-	    
-//     // 	    ERROR(error);
-//     // 	}
-//     }
-//     END_TEST
-// }
+    ASSERT_NE(childNode->getParent(), SNode)
+        << "Parent in child was not removed";
 
-// void SceneNode_Test::addChild_Test()
-// {
-//     BEGIN_TEST
-//     {
-// 	auto SNode = ae::SceneNode::create();
-	
-// 	auto childNode = SNode->createChildSceneNode();
-	
-// 	SNode->addChild(childNode);
-	
-// 	std::string error;
-	
-// 	if(childNode->getParent() != SNode)
-// 	{
-// 	    error = "Incorrect value of parent in child node";
-// 	}
-// 	else if(SNode->getChildrenCount() == 0)
-// 	{
-// 	    error = "Error while child edding as child to parent";
+    ASSERT_EQ(SNode->getChildrenCount(), 0)
+        << "Error while children deleting from parent";
+}
+//------------------------------------------------------------------------------
+TEST(SceneNodeTest, removeChildren)
+{
+    auto SNode = ae::SceneNode::create("SNode");
+    auto child_1 = SNode->createChildSceneNode("child_1");
+    auto child_2 = SNode->createChildSceneNode("child_2");
 
-// 	    ERROR(error);
-// 	}
-//     }
-//     END_TEST
-// }
+    SNode->removeChildren();
+        
+    ASSERT_NE(child_1->getParent(), SNode)
+        << "Parent in child node was not removed";
 
-// void SceneNode_Test::removeChild_Test()
-// {
-//     BEGIN_TEST
-//     {
-// 	auto SNode = ae::SceneNode::create();
-// 	auto childNode = SNode->createChildSceneNode();
-// 	childNode->setTag("child_1");
-// 	auto childNode2 = childNode->createChildSceneNode();
-// 	childNode->setTag("child_1");
-	
-// 	SNode->removeChild(childNode);
+    ASSERT_EQ(SNode->getChildrenCount(), 0)
+        << "Error while children deleting from parent";
+}
+//------------------------------------------------------------------------------
+TEST(SceneNodeTest, destroyChild)
+{
+    auto SNode = ae::SceneNode::create("SNode");
+    auto childNode = SNode->createChildSceneNode("child_1");
+    auto childChildNode = childNode->createChildSceneNode("child_1");
+    auto sprite = std::make_shared<ae::Sprite>("sprite");
+    childNode->attachObject(sprite);
 
-// 	std::string error;
+    SNode->destroyChild(childNode);
 	
-// 	if(childNode->getParent() == SNode)
-// 	{
-// 	    error =  "Incorrect value of parent in child node";
-// 	}
-// 	else if(SNode->getChildrenCount() != 0)
-// 	{
-// 	    error =  "Error while child deleting from parent";
-// 	}
-// 	else if(childNode->getChildrenCount() != 0)
-// 	{
-// 	    error =  "Error while child deleting recursive";
-// 	    ERROR(error);
-// 	}
-//     }
-//     END_TEST
-// }
+    ASSERT_NE(childNode->getParent(), SNode)
+        << "Parent in child was not removed";
 
-// void SceneNode_Test::removeChildren_Test()
-// {
-//     BEGIN_TEST
-//     {	
-// 	auto SNode = ae::SceneNode::create();
-// 	auto child_1_1 = SNode->createChildSceneNode();
-// 	auto child_1_2 = SNode->createChildSceneNode();
-	
-// 	auto child_2_1 = child_1_1->createChildSceneNode();
-// 	auto child_2_2 = child_1_2->createChildSceneNode();
-	
-// 	auto child_3_1 = child_2_1->createChildSceneNode();
-// 	auto child_3_2 = child_2_2->createChildSceneNode();
-	
-// 	auto sprite = std::make_shared<ae::Sprite>();
-// 	child_3_2->attachObject(sprite);
-	
-// 	SNode->removeChildren();
-	
-// 	if(SNode->getChildrenCount() != 0 &&
-// 	   child_1_1->getChildrenCount() != 0 &&
-// 	   child_1_2->getChildrenCount() != 0 &&
-// 	   child_2_1->getChildrenCount() != 0 &&
-// 	   child_2_2->getChildrenCount() != 0)
-// 	{
-// 	    ERROR("Error while deleting childredn from parent");
-// 	}
-// 	else if(child_3_2->detachObject() != nullptr)
-// 	{
-// 	    ERROR("Error while removing object from node");
-// 	}
-//     }	
-//     END_TEST
-// }
+    ASSERT_NE(childChildNode->getParent(), childNode)
+        << "Parent was not deleted from child of child";
 
-// void SceneNode_Test::rebaseToNewParent_Test()
-// {
-//     BEGIN_TEST
-//     {
-// 	auto firstParent = ae::SceneNode::create();
-// 	auto secondParent = ae::SceneNode::create();
-	
-// 	auto childNode = firstParent->createChildSceneNode();
-// 	childNode->setTag("childNode");
-	
-// 	firstParent->addChild(childNode);
-	
-// 	childNode->rebaseToNewParent(secondParent);
-	
-// 	std::string error;
-	
-// 	if(childNode->getParent() == firstParent)
-// 	{
-// 	    error = "First parent was not been removed from childNode parent";
-// 	}
-// 	else if (childNode->getParent() != secondParent)
-// 	{
-// 	    error = "SecondParent was not been set as parent of childNode";
-// 	}
-// 	else if(firstParent->getChildByTag("childNode"))
-// 	{
-// 	    error = "Child node was not been deleted from first parent";
-// 	}
-// 	else if (!secondParent->getChildByTag("childNode")) {
-// 	    error = "Child node has not been added to new parent";
-	    
-// 	    ERROR(error);
-// 	}
-//     }
-//     END_TEST
-// }
+    ASSERT_EQ(SNode->getChildrenCount(), 0)
+        << "Children was not removed from parent";
 
-// void SceneNode_Test::rebaseChildrenToNewParent_Test()
-// {
-//     BEGIN_TEST
-//     {
-// 	auto first_SNode = ae::SceneNode::create();
-// 	auto second_SNode = ae::SceneNode::create();
-	
-// 	for(int i(0); i < 10; ++i)
-// 	    first_SNode->createChildSceneNode();
-	
-// 	first_SNode->rebaseChildrenToNewParent(second_SNode);
-	
-// 	if(first_SNode->getChildrenCount() != 0)
-// 	{
-// 	    ERROR("Children was not been removed from parent");
-// 	}
-// 	else if (second_SNode->getChildrenCount() == 0)
-// 	{
-// 	    ERROR("Children was not been added to new parent");
-// 	}
-//     }
-//     END_TEST
-// }
+    ASSERT_FALSE(sprite->isAttached())
+        << "Object was not been detached";
+}
+//------------------------------------------------------------------------------
+TEST(SceneNodeTest, destroyChildren)
+{
+    auto SNode = ae::SceneNode::create("SNode");
+    auto childNode = SNode->createChildSceneNode("child_1");
+    auto childChildNode = childNode->createChildSceneNode("child_1");
+    auto sprite = std::make_shared<ae::Sprite>("sprite");
+    childNode->attachObject(sprite);
 
-// void SceneNode_Test::attachObject_Test()
-// {
-//     BEGIN_TEST
-//     {
-// 	auto SNode = std::make_shared<ae::SceneNode>();
+    SNode->destroyChild(childNode);
 	
-// 	auto sprite = std::make_shared<ae::Sprite>();
-	
-// 	SNode->attachObject(sprite);
-	
-// 	if (SNode->detachObject() != sprite)
-// 	{
-// 	    ERROR("Object was not been added");
-// 	} 
-//     }
-//     END_TEST
-// }
+    ASSERT_NE(childNode->getParent(), SNode)
+        << "Parent in child was not removed";
 
-// void SceneNode_Test::detachObject_Test()
-// {
-//     BEGIN_TEST
-//     {
-// 	auto SNode = ae::SceneNode::create();
-	
-// 	auto sprite = std::make_shared<ae::Sprite>();
-	
-// 	SNode->attachObject(sprite);
-	
-// 	if (SNode->detachObject() != sprite)
-// 	{
-// 	    ERROR("Object was not been added");
-// 	} 
-//     }
-//     END_TEST
-// }
+    ASSERT_NE(childChildNode->getParent(), childNode)
+        << "Parent was not deleted from child of child";
 
-// void SceneNode_Test::set_get_DrawOrder_Test()
-// {
-//     BEGIN_TEST
-//     {	
-// 	auto SNode = ae::SceneNode::create();
-// 	auto child_1 = SNode->createChildSceneNode();
-	
-// 	child_1->setDrawOrder(4);
-	
-// 	if (child_1->getDrawOrder() != 4)
-// 	{
-// 	    ERROR("Error while change drawOrder");
-// 	}    
-//     }
-//     END_TEST
-// }
+    ASSERT_EQ(SNode->getChildrenCount(), 0)
+        << "Children was not removed from parent";
 
-// void SceneNode_Test::set_get_Tag_Test()
-// {
-//     BEGIN_TEST
-//     {	
-// 	auto SNode = std::make_shared<ae::SceneNode>();
-// 	auto child_1 = SNode->createChildSceneNode();
+    ASSERT_FALSE(sprite->isAttached())
+        << "Object was not been detached from parent";
+}
+//------------------------------------------------------------------------------
+TEST(SceneNodeTest, rebaseToNewParent)
+{
+    auto firstParent = ae::SceneNode::create("firstParent");
+    auto secondParent = ae::SceneNode::create("secondParent");
+	
+    auto childNode = firstParent->createChildSceneNode("childNode");
+	
+    childNode->rebaseToNewParent(secondParent);
+	
+    ASSERT_NE(childNode->getParent(), firstParent)
+        << "First parent was not been removed from childNode parent";
 
-// 	child_1->setTag("child");
+    ASSERT_EQ(childNode->getParent(), secondParent)
+        << "SecondParent was not been set as parent of childNode";
     
-// 	if (child_1->getTag() != "child")
-// 	{
-// 	    ERROR("Error while change tag");
-// 	}
-//     }
-//     END_TEST
-// }
-
-// void SceneNode_Test::setOriginRecursive_Test()
-// {
-//     BEGIN_TEST
-//     {	
-// 	auto SNode = ae::SceneNode::create();
-// 	auto child_1 = SNode->createChildSceneNode();
-
-// 	auto tempChild = child_1->createChildSceneNode();
-// 	tempChild->setTag("1");
-// 	tempChild = child_1->createChildSceneNode();
-// 	tempChild->setTag("2");
-// 	tempChild = child_1->createChildSceneNode();
-// 	tempChild->setTag("3");
-
-// 	SNode->setOriginRecursive(ae::Vector2f(100, 100));
-
-// 	if(child_1->getOrigin() != ae::Vector2f(100, 100) ||
-// 	   child_1->getChildByTag("1")->getOrigin() != ae::Vector2f(100, 100) ||
-// 	   child_1->getChildByTag("2")->getOrigin() != ae::Vector2f(100, 100) ||
-// 	   child_1->getChildByTag("3")->getOrigin() != ae::Vector2f(100, 100))
-// 	{
-// 	    ERROR("Error while set origins to children");
-// 	}
-//     }        
-//     END_TEST
-// }
-
-// void SceneNode_Test::setScaleRecursive_Test()
-// {
-//     BEGIN_TEST
-//     {	
-// 	auto SNode = ae::SceneNode::create();
-// 	auto child_1 = SNode->createChildSceneNode();
-
-// 	auto tempChild = child_1->createChildSceneNode();
-// 	tempChild->setTag("1");
-// 	tempChild = child_1->createChildSceneNode();
-// 	tempChild->setTag("2");
-// 	tempChild = child_1->createChildSceneNode();
-// 	tempChild->setTag("3");
-
-// 	SNode->setScaleRecursive(ae::Vector2f(0.5, 0.5));
-
-// 	if(child_1->getScale() != ae::Vector2f(0.5, 0.5) ||
-// 	   child_1->getChildByTag("1")->getScale() != ae::Vector2f(0.5, 0.5) ||
-// 	   child_1->getChildByTag("2")->getScale() != ae::Vector2f(0.5, 0.5) ||
-// 	   child_1->getChildByTag("3")->getScale() != ae::Vector2f(0.5, 0.5))
-// 	{
-// 	    ERROR("Error while set scale to children");
-// 	}
-//     }
-//     END_TEST
-// }
-
-// void SceneNode_Test::setPositionRecursive_Test()
-// {
-//     BEGIN_TEST
-//     {	
-// 	auto SNode = ae::SceneNode::create();
-// 	auto child_1 = SNode->createChildSceneNode();
-
-// 	auto tempChild = child_1->createChildSceneNode();
-// 	tempChild->setTag("1");
-// 	tempChild = child_1->createChildSceneNode();
-// 	tempChild->setTag("2");
-// 	tempChild = child_1->createChildSceneNode();
-// 	tempChild->setTag("3");
-
-// 	SNode->setPositionRecursive(ae::Vector2f(100, 100));
-
-// 	if(child_1->getPosition() != ae::Vector2f(100, 100) ||
-// 	   child_1->getChildByTag("1")->getPosition() != ae::Vector2f(100, 100) ||
-// 	   child_1->getChildByTag("2")->getPosition() != ae::Vector2f(100, 100) ||
-// 	   child_1->getChildByTag("3")->getPosition() != ae::Vector2f(100, 100))
-// 	{
-// 	    ERROR("Error while set positions to children");
-// 	}
-//     }
-//     END_TEST
-// }
-
-// void SceneNode_Test::setRotationRecursive_Test()
-// {
-//     BEGIN_TEST
-//     {	
-// 	auto SNode = ae::SceneNode::create();
-// 	auto child_1 = SNode->createChildSceneNode();
-
-// 	auto tempChild = child_1->createChildSceneNode();
-// 	tempChild->setTag("1");
-// 	tempChild = child_1->createChildSceneNode();
-// 	tempChild->setTag("2");
-// 	tempChild = child_1->createChildSceneNode();
-// 	tempChild->setTag("3");
-
-// 	SNode->setRotationRecursive(100);
-
-// 	if(child_1->getRotation() != 100 ||
-// 	   child_1->getChildByTag("1")->getRotation() != 100 ||
-// 	   child_1->getChildByTag("2")->getRotation() != 100 ||
-// 	   child_1->getChildByTag("3")->getRotation() != 100)
-// 	{
-// 	    ERROR("Error while set rotation to children");
-// 	}
-//     }
-//     END_TEST
-// }
-
-// void SceneNode_Test::moveRecursive_Test()
-// {
-//     BEGIN_TEST
-//     {	
-// 	auto SNode = ae::SceneNode::create();
-// 	auto child_1 = SNode->createChildSceneNode();
-
-// 	auto tempChild = child_1->createChildSceneNode();
-// 	tempChild->setTag("1");
-// 	tempChild = child_1->createChildSceneNode();
-// 	tempChild->setTag("2");
-// 	tempChild = child_1->createChildSceneNode();
-// 	tempChild->setTag("3");
-
-// 	SNode->moveRecursive(ae::Vector2f(100, 100));
-
-// 	if(child_1->getPosition() != ae::Vector2f(100, 100) ||
-// 	   child_1->getChildByTag("1")->getPosition() != ae::Vector2f(100, 100) ||
-// 	   child_1->getChildByTag("2")->getPosition() != ae::Vector2f(100, 100) ||
-// 	   child_1->getChildByTag("3")->getPosition() != ae::Vector2f(100, 100))
-// 	{
-// 	    ERROR("Error while moving children");
-// 	}
-//     }
-//     END_TEST
-// }
-
-// void SceneNode_Test::rotateRecursive_Test()
-// {
-//     BEGIN_TEST
-//     {	
-// 	auto SNode = ae::SceneNode::create();
-// 	auto child_1 = SNode->createChildSceneNode();
+    ASSERT_FALSE(firstParent->getChild("childNode"))
+        << "Child node was not been deleted from first parent";
     
-// 	auto tempChild = child_1->createChildSceneNode();
-// 	tempChild->setTag("1");
-// 	tempChild = child_1->createChildSceneNode();
-// 	tempChild->setTag("2");
-// 	tempChild = child_1->createChildSceneNode();
-// 	tempChild->setTag("3");
+    ASSERT_TRUE(secondParent->getChild("childNode"))
+        << "Child node has not been added to new parent";
+}
+//------------------------------------------------------------------------------
+TEST(SceneNodeTest, rebaseChildrenToNewParent)
+{
+    auto firstParent = ae::SceneNode::create("firstParent");
+    auto secondParent = ae::SceneNode::create("secondParent");
+	
+    for(int i(0); i < 10; ++i)
+        firstParent->createChildSceneNode(std::to_string(i));
+	
+    firstParent->rebaseChildrenToNewParent(secondParent);
+	
+    ASSERT_EQ(firstParent->getChildrenCount(), 0)
+        << "Children was not been removed from parent";
+
+    ASSERT_NE(secondParent->getChildrenCount(), 0)
+        << "Children was not been added to new parent";
+}
+//------------------------------------------------------------------------------
+TEST(SceneNodeTest, getDescendantCount)
+{
+    auto parent = ae::SceneNode::create("parent");
+    auto child = parent->createChildSceneNode("child1");
+    auto childChild = child->createChildSceneNode("child2");
+    auto childChildChild = childChild->createChildSceneNode("child3");
+	
+    ASSERT_EQ(parent->getDescendantCount(), 3)
+        << "Incorect descendant count";
+}
+//------------------------------------------------------------------------------
+TEST(SceneNodeTest, setVisibleRecursive)
+{
+    auto parent = ae::SceneNode::create("parent");
+    auto child = parent->createChildSceneNode("child1");
+    auto childChild = child->createChildSceneNode("child2");
+    auto childChildChild = childChild->createChildSceneNode("child3");
+	
+    parent->setVisibleRecursive(false);
+        
+    ASSERT_FALSE(childChildChild->isVisible())
+        << "Visible was not been set recursive";
+}
+//------------------------------------------------------------------------------
+TEST(SceneNodeTest, attachObject)
+{
+    auto SNode = ae::SceneNode::create("SNode");
+
+    auto sprite = std::make_shared<ae::Sprite>("sprite");
+
+    SNode->attachObject(sprite);
+
+    ASSERT_NE(SNode->numAttachedObjects(), 0)
+        << "Object was not been attached";
+}
+//------------------------------------------------------------------------------
+TEST(SceneNodeTest, detachObject)
+{
+    auto SNode = ae::SceneNode::create("SNode");
+
+    auto sprite = std::make_shared<ae::Sprite>("sprite");
+
+    SNode->detachObject(sprite);
+
+    ASSERT_EQ(SNode->numAttachedObjects(), 0)
+        << "Object was not been detached";
+}
+//------------------------------------------------------------------------------    
+TEST(SceneNodeTest, detachAllObjects)
+{
+    auto SNode = ae::SceneNode::create("SNode");
+
+    for(int i(0); i < 10; ++i) {
+        auto sprite = std::make_shared<ae::Sprite>(std::to_string(i));
+        SNode->attachObject(sprite);
+    }
+
+    SNode->detachAllObjects();
+        
+    ASSERT_EQ(SNode->numAttachedObjects(), 0)
+        << "Objects was not been detached";
+}
+//------------------------------------------------------------------------------
+TEST(SceneNodeTest, getAttachedObject)
+{
+    auto SNode = ae::SceneNode::create("SNode");
+
+    auto sprite = std::make_shared<ae::Sprite>("sprite");
+
+    SNode->attachObject(sprite);
     
-// 	SNode->rotateRecursive(100);
+    ASSERT_EQ(SNode->getAttachedObject("sprite"), sprite)
+        << "Incorect value of returned object";
+}
+//------------------------------------------------------------------------------
+TEST(SceneNodeTest, getDrawableObjects)
+{
+    auto SNode = ae::SceneNode::create("SNode");
+
+    for(int i(0); i < 10; ++i) {
+        auto sprite = std::make_shared<ae::Sprite>(std::to_string(i));
+        SNode->attachObject(sprite);
+        if(i < 5)
+            sprite->setVisible(false);
+    }
+        
+    ASSERT_EQ(SNode->getDrawableObjects().size(), 5)
+        << "Incorect size of returned vector";
+}
+//------------------------------------------------------------------------------
+TEST(SceneNodeTest, getDrawableChildren)
+{
+    auto SNode = ae::SceneNode::create("SNode");
+
+    for(int i(0); i < 10; ++i) {
+        auto node = SNode->createChildSceneNode(std::to_string(i));
+        if(i < 5)
+            node->setVisible(false);
+    }
+        
+    ASSERT_EQ(SNode->getDrawableChildren().size(), 5)
+        << "Incorect size of returned vector";
+}
+//------------------------------------------------------------------------------
+TEST(SceneNodeTest, setDrawOrder)
+{
+    auto SNode = ae::SceneNode::create("SNode");
+    auto child1 = SNode->createChildSceneNode("child1", 5);
+    auto child2 = SNode->createChildSceneNode("child2", 10);
+            
+    child2->setDrawOrder(2);
+	
+    ASSERT_EQ(child2->getDrawOrder(), 2)
+        << "New value of draw order was't been set";
+
+    ASSERT_EQ(child1->getParent()->getDrawableChildren()[0]->getDrawOrder(), 2)
+        << "Parent does't sort children after they change his draw order";
+}
+//------------------------------------------------------------------------------
+TEST(SceneNodeTest, changeObjectDrawOrder)
+{
+    auto SNode = ae::SceneNode::create("SNode");
+    auto sprite1 = std::make_shared<ae::Sprite>("sprite1");
+    auto sprite2 = std::make_shared<ae::Sprite>("sprite2");
+
+    SNode->attachObject(sprite1, 1);
+    SNode->attachObject(sprite2, 2);
+
+    SNode->changeObjectDrawOrder(sprite2, 0);
+
+    SNode->update();
     
-// 	if(child_1->getRotation() != 100 ||
-// 	   child_1->getChildByTag("1")->getRotation() != 100 ||
-// 	   child_1->getChildByTag("2")->getRotation() != 100 ||
-// 	   child_1->getChildByTag("3")->getRotation() != 100)
-// 	{
-// 	    ERROR("Error while rotating children");
-// 	}
-//     }
-//     END_TEST
-// }
+    ASSERT_EQ(sprite2->getDrawOrder(), 0)
+        << "New value of draw order was't been set";
 
-// void SceneNode_Test::scaleRecursive_Test()
-// {
-//     BEGIN_TEST
-//     {	
-// 	auto SNode = ae::SceneNode::create();
-// 	auto child_1 = SNode->createChildSceneNode();
+    ASSERT_EQ(SNode->getDrawableObjects()[0]->getDrawOrder(), 0)
+        << "Parent does't sort objects after they change his draw order";
+}
+//------------------------------------------------------------------------------
+TEST(SceneNodeTest, setOriginRecursive)
+{
+    auto SNode = ae::SceneNode::create("SNode");
+    auto child_1 = SNode->createChildSceneNode("child_1");
 
-// 	auto tempChild = child_1->createChildSceneNode();
-// 	tempChild->setTag("1");
-// 	tempChild = child_1->createChildSceneNode();
-// 	tempChild->setTag("2");
-// 	tempChild = child_1->createChildSceneNode();
-// 	tempChild->setTag("3");
+    child_1->createChildSceneNode("1");
+    child_1->createChildSceneNode("2");
+    child_1->createChildSceneNode("3");
 
-// 	SNode->scaleRecursive(ae::Vector2f(0.5, 0.5));
+    SNode->setOriginRecursive(ae::Vector2f(100, 100));
 
-// 	if(child_1->getScale() != ae::Vector2f(0.5, 0.5) ||
-// 	   child_1->getChildByTag("1")->getScale() != ae::Vector2f(0.5, 0.5) ||
-// 	   child_1->getChildByTag("2")->getScale() != ae::Vector2f(0.5, 0.5) ||
-// 	   child_1->getChildByTag("3")->getScale() != ae::Vector2f(0.5, 0.5))
-// 	{
-// 	    ERROR("Error while scaling children");
-// 	}
-//     }
-//     END_TEST
-// }
+    ASSERT_EQ(child_1->getOrigin(), ae::Vector2f(100, 100));
+    ASSERT_EQ(child_1->getChild("1")->getOrigin(), ae::Vector2f(100, 100));
+    ASSERT_EQ(child_1->getChild("2")->getOrigin(), ae::Vector2f(100, 100));
+    ASSERT_EQ(child_1->getChild("3")->getOrigin(), ae::Vector2f(100, 100));
+}        
+//------------------------------------------------------------------------------
+TEST(SceneNodeTest, setScaleRecursive)
+{
+    auto SNode = ae::SceneNode::create("SNode");
+    auto child_1 = SNode->createChildSceneNode("child_1");
 
-// void SceneNode_Test::beginTests()
-// {
-//     MESSAGE("SceneNode test block:");    
+    child_1->createChildSceneNode("1");
+    child_1->createChildSceneNode("2");
+    child_1->createChildSceneNode("3");
 
-//     SceneNodeConstructor_Test();
-//     createChildSceneNode_Test();
-//     addChild_Test();
-//     removeChild_Test();
-//     removeChildren_Test();
-//     rebaseToNewParent_Test();
-//     rebaseChildrenToNewParent_Test();
-//     attachObject_Test();
-//     detachObject_Test();
-//     set_get_DrawOrder_Test();
-//     set_get_Tag_Test();
-//     setOriginRecursive_Test();
-//     setScaleRecursive_Test();
-//     setPositionRecursive_Test();
-//     setRotationRecursive_Test();
-//     moveRecursive_Test();
-//     rotateRecursive_Test();
-//     scaleRecursive_Test();
+    SNode->setScaleRecursive(ae::Vector2f(0.5, 0.5));
 
-//     MESSAGE("End SceneNode test block"); 
-// }
+    ASSERT_EQ(child_1->getScale(), ae::Vector2f(0.5, 0.5));
+    ASSERT_EQ(child_1->getChild("1")->getScale(), ae::Vector2f(0.5, 0.5));
+    ASSERT_EQ(child_1->getChild("2")->getScale(), ae::Vector2f(0.5, 0.5));
+    ASSERT_EQ(child_1->getChild("3")->getScale(), ae::Vector2f(0.5, 0.5));
+}
+//------------------------------------------------------------------------------
+TEST(SceneNodeTest, setPositionRecursive)
+{
+    auto SNode = ae::SceneNode::create("SNode");
+    auto child_1 = SNode->createChildSceneNode("child_1");
+
+    child_1->createChildSceneNode("1");
+    child_1->createChildSceneNode("2");
+    child_1->createChildSceneNode("3");
+
+    SNode->setPositionRecursive(ae::Vector2f(100, 100));
+
+    ASSERT_EQ(child_1->getPosition(), ae::Vector2f(100, 100));
+    ASSERT_EQ(child_1->getChild("1")->getPosition(), ae::Vector2f(100, 100));
+    ASSERT_EQ(child_1->getChild("2")->getPosition(), ae::Vector2f(100, 100));
+    ASSERT_EQ(child_1->getChild("3")->getPosition(),ae::Vector2f(100, 100));
+}
+//------------------------------------------------------------------------------
+TEST(SceneNode_Test, setRotationRecursive)
+{
+    auto SNode = ae::SceneNode::create("SNode");
+    auto child_1 = SNode->createChildSceneNode("child_1");
+
+    child_1->createChildSceneNode("1");
+    child_1->createChildSceneNode("2");
+    child_1->createChildSceneNode("3");
+
+    SNode->setRotationRecursive(100);
+
+    ASSERT_EQ(child_1->getRotation(), 100);
+    ASSERT_EQ(child_1->getChild("1")->getRotation(), 100);
+    ASSERT_EQ(child_1->getChild("2")->getRotation(), 100);
+    ASSERT_EQ(child_1->getChild("3")->getRotation(), 100);
+}
+//------------------------------------------------------------------------------
+TEST(SceneNodeTest, moveRecursive)
+{
+    auto SNode = ae::SceneNode::create("SNode");
+    auto child_1 = SNode->createChildSceneNode("child_1");
+
+    auto tempChild = child_1->createChildSceneNode("1");
+    tempChild = child_1->createChildSceneNode("2");
+    tempChild = child_1->createChildSceneNode("3");
+
+    SNode->moveRecursive(ae::Vector2f(100, 100));
+
+    ASSERT_EQ(child_1->getPosition(), ae::Vector2f(100, 100));
+    ASSERT_EQ(child_1->getChild("1")->getPosition(), ae::Vector2f(100, 100));
+    ASSERT_EQ(child_1->getChild("2")->getPosition(), ae::Vector2f(100, 100));
+    ASSERT_EQ(child_1->getChild("3")->getPosition(), ae::Vector2f(100, 100));
+}
+//------------------------------------------------------------------------------
+TEST(SceneNodeTest, rotateRecursive)
+{
+    auto SNode = ae::SceneNode::create("SNode");
+    auto child_1 = SNode->createChildSceneNode("child_1");
+    
+    auto tempChild = child_1->createChildSceneNode("1");
+    tempChild = child_1->createChildSceneNode("2");
+    tempChild = child_1->createChildSceneNode("3");
+    
+    SNode->rotateRecursive(100);
+    
+    ASSERT_EQ(child_1->getRotation(), 100);
+    ASSERT_EQ(child_1->getChild("1")->getRotation(), 100);
+    ASSERT_EQ(child_1->getChild("2")->getRotation(), 100);
+    ASSERT_EQ(child_1->getChild("3")->getRotation(), 100);
+}
+//------------------------------------------------------------------------------
+TEST(SceneNodeTest, scaleRecursive)
+{
+    auto SNode = ae::SceneNode::create("SNode");
+    auto child_1 = SNode->createChildSceneNode("child_1");
+
+    auto tempChild = child_1->createChildSceneNode("1");
+    tempChild = child_1->createChildSceneNode("2");
+    tempChild = child_1->createChildSceneNode("3");
+        
+    SNode->scaleRecursive(ae::Vector2f(0.5, 0.5));
+
+    ASSERT_EQ(child_1->getScale(), ae::Vector2f(0.5, 0.5));
+    ASSERT_EQ(child_1->getChild("1")->getScale(), ae::Vector2f(0.5, 0.5));
+    ASSERT_EQ(child_1->getChild("2")->getScale(), ae::Vector2f(0.5, 0.5));
+    ASSERT_EQ(child_1->getChild("3")->getScale(), ae::Vector2f(0.5, 0.5));
+}
+//------------------------------------------------------------------------------

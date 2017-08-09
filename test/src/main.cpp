@@ -1,30 +1,39 @@
-#include <SceneNode_Test.hpp>
-#include <AE/Graphics.hpp>
-#include <vector>
-#include <memory>
-#include <string>
+#include <SceneNode_Test.cpp>
 
+int main(int argc, char *argv[])
+{
+    ::testing::InitGoogleTest(&argc, argv);
+
+    return RUN_ALL_TESTS();
+    
+    return 0;
+}
+
+
+
+/*
 int main()
 {
-    /* Unit tests
-    std::vector<Test*> testClasses =
-    {
-	new SceneNode_Test()
-	//...
-    };
+// Unit tests ------------------------------------------------------------------
+    // std::vector<Test*> testClasses
+    // {
+    //     new SceneNode_Test()
+    //     //...
+    // };
 
-    for(auto itr : testClasses)
-	itr->beginTests();
+    // for(auto itr : testClasses)
+    //     itr->beginTests();
 
-    for(auto &itr : testClasses)
-	delete itr;
-    */
+    // for(auto &itr : testClasses)
+    //     delete itr;
+    
 
-    // Visual test
+// Visual test -----------------------------------------------------------------
 
-    auto renderWindow = std::shared_ptr<ae::RenderWindow>( new ae::RenderWindow({720, 480},
-										"AE_Test"));
-//    renderWindow->setSize(renderWindow->getSize());
+    auto renderWindow =
+        std::shared_ptr<ae::RenderWindow>( new ae::RenderWindow({1280, 720},
+                                                                "AE_Test"));
+    renderWindow->setSize(renderWindow->getSize());
 
     
     
@@ -56,7 +65,7 @@ int main()
     smgr.addScene(scene);
     
     ae::Texture texture;
-    texture.loadFromFile("test_image.png");
+    texture.loadFromFile("arch.png");
 
     
     std::shared_ptr<ae::Sprite> sprites[4];
@@ -92,6 +101,7 @@ int main()
 	} 
 	
         renderWindow->clear();
+        smgr.updateCurrentScene();
         smgr.drawCurrentScene(renderWindow);
 	renderWindow->display();
 
@@ -99,7 +109,8 @@ int main()
 	fps = 1.f / lastTime;
 	lastTime = currentTime;
 
-	std:: cout << fps << std::endl;
+        //        std:: cout << fps << std::endl;
     }
 }
 
+*/

@@ -32,6 +32,7 @@ void Object::notifyAttached(std::shared_ptr<ae::SceneNode> _parentSNode)
 
 void Object::notifyDetached()
 {
+    parentNode.reset();
     attached = false;
 }
     
@@ -50,14 +51,18 @@ bool Object::isVisible()
     return visible;
 }
 
-void Object::setDrawOrder(int _drawOrder)
+void Object::setDrawOrder(int newDrawOrder)
 {
-    drawOrder = drawOrder;
-
+    drawOrder = newDrawOrder;
     if(auto pnode = parentNode.lock()) {
-	pnode->setNeedUpdateObjectQueue();
-    }
+	pnode->setNeedSortAttachedObjects();
+    }    
 }
+
+int Object::getDrawOrder()
+{
+    return drawOrder;
+}        
 
 void Object::detachFromParent()
 {

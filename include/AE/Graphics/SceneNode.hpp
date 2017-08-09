@@ -4,7 +4,7 @@
 #include <AE/Graphics/Object.hpp>
 #include <AE/Graphics/RenderWindow.hpp>
 #include <AE/Graphics/Updatable.hpp>
-#include <map>
+#include <vector>
 #include <memory>
 
 namespace ae
@@ -21,9 +21,10 @@ public:
     typedef std::shared_ptr<Object>         ObjPtr;
     typedef std::shared_ptr<SceneNode>      SNodePtr;
     typedef std::weak_ptr<SceneNode>        ParentPtr;
-    typedef std::map<std::string, SNodePtr> SceneNodeMap;
-    typedef std::map<std::string, ObjPtr>   ObjectMap;
-    typedef std::vector<SNodePtr>           Queue;
+    typedef std::vector<SNodePtr>           SceneNodeQueue;
+    typedef std::vector<ObjPtr>             ObjectQueue;
+    typedef std::vector<SNodePtr>::iterator ChildItr;
+    typedef std::vector<ObjPtr>::iterator   ObjItr;
 
     struct Parameters
     {
@@ -33,49 +34,51 @@ public:
 	float               rotation;
 	bool                visible;
 
-    public:
-	/*
-	 * Takes as a parameter the node
-	 * whose fields will be used for initialization
-	 */
-	Parameters(SNodePtr snodeForInit) :
-	    position(snodeForInit->getPosition()), 
-	    scale(snodeForInit->getScale()),
-	    origin(snodeForInit->getOrigin()),
-	    rotation(snodeForInit->getRotation()),
-	    visible(snodeForInit->getVisible())
-	    { }
+        //* Takes as a parameter the node
+        //* whose fields will be used for initialization
+        Parameters(SNodePtr snodeForInit) :
+            position(snodeForInit->getPosition()), 
+            scale(snodeForInit->getScale()),
+            origin(snodeForInit->getOrigin()),
+            rotation(snodeForInit->getRotation()),
+            visible(snodeForInit->getVisible())
+        { }
     };
-    
 private:
     std::string name;
     int drawOrder;
     bool visible;
     
     ParentPtr parent;
-    SceneNodeMap children;
-    ObjectMap attachedObjects;
-    Queue objectsQueue;
-    Queue childrenQueue;
-    
-    bool needUpdateChildrenQueue;
-    bool needUpdateObjectQueue;
+    SceneNodeQueue children;
+    ObjectQueue attachedObjects;
+
+    //* This flag will be throwed to RootSceneNode
+    //* Layer check this, and update drawable pull
+    bool needUpdateDrawableQueue;
+
+    //* This flag set, while attached objects
+    //* change his drawOrder
+    bool needSortAttachedObjects;
 
 protected:
     void setParent(SNodePtr _parent);
     void removeParent();
     const Parameters getParameters();
-    /*
-     * Return position, ratotion, origin, scale and visible this node
-     * to child(paremeter)
-     */
-    void setParentParameters(const Parameters& param);
-    void setNeedUpdateChildrenQueue();
-    void setNeedUpdateObjectQueue();
-    void updateChildrenQueue();
-    void updateObjectQueue();
 
-    friend void Object::setDrawOrder(int);
+    ChildItr getChildItr(SNodePtr child);
+    ChildItr getChildItr(const std::string &name);
+    ObjItr getObjectItr(ObjPtr child);
+    ObjItr getObjectItr(const std::string &name);
+    
+    //* Return position, ratotion, origin, scale and visible this node
+    //* to child(paremeter)
+    void setParentParameters(const Parameters& param);
+
+    void setNeedUpdateDrawableQueue(bool value = true);
+
+    void sortChildrenByDrawOrder();
+    void sortObjectsByDrawOrder();
     
 public:
     SceneNode(const std::string&  name,
@@ -97,27 +100,23 @@ public:
 			   float               rotation = 0.0);    
     
 
-    /** Create new Node, add it as child to this node then return it */
-    virtual SNodePtr createChildSceneNode(const std::string& name, int drawOrder);
+    //* Create new Node, add it as child to this node then return it
+    virtual SNodePtr createChildSceneNode(const std::string& name, int drawOrder = 0);
 
     virtual void addChild(SNodePtr childNode);
     virtual SNodePtr getChild(const std::string& _name);
 
-    /* 
-     * Remove child from whis node
-     * But if pointer to child was saved in other place
-     * children of child will not be deleted from children
-     */    
+    //* Remove child from whis node
+    //* But if pointer to child was saved in other place
+    //* children of child will not be deleted from children
     virtual void removeChild(SNodePtr childToRemove);
     virtual void removeChild(const std::string& _name);
     virtual void removeChildren();
 
-    /*
-     * Remove child from whis node
-     * If pointer to child was saved in other place
-     * children of child will be deleted from child children
-     * Also destroy* methods detach all objects from children
-     */
+    //* Remove child from whis node
+    //* If pointer to child was saved in other place
+    //* children of child will be deleted from child children
+    //* Also destroy* methods detach all objects from children
     virtual void destroyChild(SNodePtr childToRemove);
     virtual void destroyChild(const std::string& _name);
     virtual void destroyChildren();
@@ -128,13 +127,13 @@ public:
     virtual void setName(const std::string& _name) { name = _name; }
     virtual const std::string& getName() const { return name; }
 
-    virtual const SNodePtr getParent() const;
+    virtual const SNodePtr getParent();
 
-    /** Return count of children of this node without grandchildren asf */
+    //* Return count of children of this node without grandchildren asf
     virtual int getChildrenCount() const { return children.size(); }
 
-    /** Return count of children of this node with grandchildren asf */
-    virtual int getDescendantCount() const;
+    //* Return count of children of this node with grandchildren asf
+    virtual int getDescendantCount();
     
     virtual bool isVisible();
     virtual void setVisible(bool _visible);
@@ -146,10 +145,21 @@ public:
     virtual ObjPtr detachObject(const std::string& objectName);
     virtual void detachAllObjects();
     virtual ObjPtr getAttachedObject(const std::string& objectName);
-    virtual int numAttachedObjects();
+    virtual int numAttachedObjects(); // TODO: rename
+
+    //* this methods need for build drawable in layer
+    virtual ObjectQueue getDrawableObjects();
+    virtual SceneNodeQueue getDrawableChildren();
     
     virtual void setDrawOrder(int _drawOrder);
     virtual int getDrawOrder() const { return drawOrder; }
+
+    virtual void changeObjectDrawOrder(const std::string &objName,
+                                      int newDrawOrder);
+    virtual void changeObjectDrawOrder(ObjPtr obj, int newDrawOrder);
+
+    virtual void setNeedSortAttachedObjects();
+    virtual bool isNeedUpdateDrawableQueue();
     
     virtual void setOrigin(const Vector2f& origin);
     virtual void setOrigin(float x, float y);
@@ -192,12 +202,8 @@ public:
     virtual void update();
     
     virtual void draw(RenderTarget& target, RenderStates states) const override;
-
-    bool operator< (const SceneNode& right)
-    {
-        return this->drawOrder < right.drawOrder;
-    }
 };
+
     
 } //namespace ae
 

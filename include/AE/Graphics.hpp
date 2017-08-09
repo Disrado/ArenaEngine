@@ -59,8 +59,7 @@
 #include <AE/Graphics/Layer.hpp>
 #include <AE/Graphics/Scene.hpp>
 #include <AE/Graphics/SceneManager.hpp>
-
-
+#include <AE/Graphics/Object.hpp>
 #endif // SFML_GRAPHICS_HPP
 
 ////////////////////////////////////////////////////////////

@@ -20,6 +20,7 @@ public:
     void deleteScene(std::shared_ptr<Scene> scene);
     void setCurrentScene(std::shared_ptr<Scene> newScene);
     void replaceCurrentScene(std::shared_ptr<Scene> newScene);
+    void updateCurrentScene();
     void drawCurrentScene(std::shared_ptr<ae::RenderWindow> renderWindow);
 };
     
