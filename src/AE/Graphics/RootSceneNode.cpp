@@ -21,7 +21,7 @@ RootSceneNode::RootSceneNode(bool                visible,
 		origin,
 		rotation) 
 { }
-   
+
 void RootSceneNode::draw(RenderTarget& target, RenderStates states) const
 {
     SceneNode::draw(target, states);

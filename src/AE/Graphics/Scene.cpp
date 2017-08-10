@@ -21,12 +21,12 @@ void Scene::addLayer(std::shared_ptr<Layer> layer)
         layers.insert(layer);
 }
     
-void Scene::deleteLayer(const std::string& tag)
+void Scene::deleteLayer(const std::string& name)
 {
     auto itr = std::find_if(layers.begin(), layers.end(),
-                            [&tag](const std::shared_ptr<Layer>& item) -> bool
+                            [&name](const std::shared_ptr<Layer>& item) -> bool
                             {
-                                return item->getTag() == tag;
+                                return item->getName() == name;
                             });
     
     if(itr != layers.end()) {
@@ -45,12 +45,12 @@ void Scene::deleteLayer(std::shared_ptr<Layer> layer)
     }    
 }
          
-void Scene::changeDrawOrder(const std::string& tag, int newDrawOrder)
+void Scene::changeLayerDrawOrder(const std::string& name, int newDrawOrder)
 {
     auto itr = std::find_if(layers.begin(), layers.end(),
-                            [&tag](const std::shared_ptr<Layer>& item) -> bool
+                            [&name](const std::shared_ptr<Layer>& item) -> bool
                             {
-                                return item->getTag() == tag;
+                                return item->getName() == name;
                             });
 
     if(itr != layers.end()) {
@@ -61,7 +61,7 @@ void Scene::changeDrawOrder(const std::string& tag, int newDrawOrder)
     }
 }
     
-void Scene::changeDrawOrder(std::shared_ptr<Layer> layer, int newDrawOrder)
+void Scene::changeLayerDrawOrder(std::shared_ptr<Layer> layer, int newDrawOrder)
 {
     auto itr = layers.find(layer);
         

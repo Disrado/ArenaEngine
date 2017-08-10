@@ -51,6 +51,7 @@ SNodePtr SceneNode::createChildSceneNode(const std::string& name,
     newChild->setParentParameters(this->getParameters());
     this->addChild(newChild);
 
+    setNeedUpdateNodesCommonPool();
     setNeedUpdateDrawableQueue();
     
     return newChild;
@@ -80,12 +81,12 @@ void SceneNode::removeParent()
 //------------------------------------------------------------------------------
 ChildItr SceneNode::getChildItr(SNodePtr child)
 {
-    return std::find(children.begin(), children.end(), child);
+    return std::find(begin(children), end(children), child);
 }
 //------------------------------------------------------------------------------    
 ChildItr SceneNode::getChildItr(const std::string &name)
 {
-    return std::find_if(children.begin(), children.end(),
+    return std::find_if(begin(children), end(children),
                         [&name](SNodePtr lhs)
                         {
                             return lhs->getName() == name;
@@ -94,18 +95,18 @@ ChildItr SceneNode::getChildItr(const std::string &name)
 //------------------------------------------------------------------------------
 ObjItr SceneNode::getObjectItr(ObjPtr obj)
 {
-    return std::find(attachedObjects.begin(), attachedObjects.end(), obj);
+    return std::find(begin(attachedObjects), end(attachedObjects), obj);
 }
 //------------------------------------------------------------------------------
 ObjItr SceneNode::getObjectItr(const std::string &name)
 {
-    return std::find_if(attachedObjects.begin(), attachedObjects.end(),
+    return std::find_if(begin(attachedObjects), end(attachedObjects),
                         [&name](ObjPtr lhs)
                         {
                             return lhs->getName() == name;
                         });
 }
-//------------------------------------------------------------------------------
+//--------------------------------------------------------------x----------------
 const Parameters SceneNode::getParameters()
 {
     return Parameters(shared_from_this());
@@ -126,6 +127,11 @@ void SceneNode::setParentParameters(const Parameters& param)
 void SceneNode::setNeedUpdateDrawableQueue(bool value)
 {
     needUpdateDrawableQueue = value;
+}
+//------------------------------------------------------------------------------
+void SceneNode::setNeedUpdateNodesCommonPool(bool value)
+{
+    needUpdateNodesCommonPool = value;
 }
 //------------------------------------------------------------------------------
 void SceneNode::sortChildrenByDrawOrder()
@@ -182,13 +188,14 @@ void SceneNode::addChild(SNodePtr child)
     if(child) {
 	SNodePtr parent = parent = child->parent.lock();
 	if(!parent) {
-            // Check if child already exist as children of this node
+            // Check if child does't already exist as children of this node
             if(getChildItr(child) == children.end()) {
                 children.push_back(child);
                 
                 child->setParent(shared_from_this());
 		child->setParentParameters(this->getParameters());
 
+                setNeedUpdateNodesCommonPool();
                 setNeedUpdateDrawableQueue();
 	    } else {
 		Logger::getInstance().write(
@@ -224,6 +231,9 @@ SNodePtr SceneNode::getChild(const std::string& _name)
     }
 }	
 //------------------------------------------------------------------------------
+//* This method is implemented separately instead simple call
+//* removeChild(childToRemove->name);
+//* because the search for an object by the pointer is faster than by name
 void SceneNode::removeChild(SNodePtr childToRemove)
 {
     if(children.empty())
@@ -235,12 +245,13 @@ void SceneNode::removeChild(SNodePtr childToRemove)
         (*itr)->removeParent();
         children.erase(itr);
 
+        setNeedUpdateNodesCommonPool();
         setNeedUpdateDrawableQueue();
     } else {
-	ae::Logger::getInstance().write(
+	Logger::getInstance().write(
 	    "WARNING",
 	    "Child node named " + childToRemove->name +
-	    "does not exist in " + name);
+	    " does not exist in " + name);
     }
 }
 //------------------------------------------------------------------------------
@@ -255,9 +266,10 @@ void SceneNode::removeChild(const std::string& _name)
         (*itr)->removeParent();
         children.erase(itr);
 
+        setNeedUpdateNodesCommonPool();
         setNeedUpdateDrawableQueue();
     } else {
-	ae::Logger::getInstance().write(
+	Logger::getInstance().write(
 	    "WARNING",
 	    "Child node named " + _name + "does not exist in " + name);
     }
@@ -270,6 +282,7 @@ void SceneNode::removeChildren()
 
     children.clear();
 
+    setNeedUpdateNodesCommonPool();
     setNeedUpdateDrawableQueue();
 }
 //------------------------------------------------------------------------------
@@ -286,9 +299,10 @@ void SceneNode::destroyChild(SNodePtr childToRemove)
         (*itr)->detachAllObjects();
         children.erase(itr);
 
+        setNeedUpdateNodesCommonPool();
         setNeedUpdateDrawableQueue();
     } else {
-	ae::Logger::getInstance().write(
+	Logger::getInstance().write(
 	    "WARNING",
 	    "Child node named " + childToRemove->name +
 	    "does not exist in " + name);
@@ -308,9 +322,10 @@ void SceneNode::destroyChild(const std::string& _name)
         (*itr)->detachAllObjects();
         children.erase(itr);
 
+        setNeedUpdateNodesCommonPool();
         setNeedUpdateDrawableQueue();
     } else {
-	ae::Logger::getInstance().write(
+	Logger::getInstance().write(
 	    "WARNING",
 	    "Child node named " + _name + "does not exist in " + name);
     }   
@@ -325,6 +340,7 @@ void SceneNode::destroyChildren()
     }
     
     children.clear();
+    setNeedUpdateNodesCommonPool();
     setNeedUpdateDrawableQueue();
 }
 //------------------------------------------------------------------------------
@@ -335,6 +351,8 @@ void SceneNode::rebaseToNewParent(SNodePtr newParent)
 	    ptr->removeChild(shared_from_this());
 	
         newParent->addChild(shared_from_this());
+
+        setNeedUpdateDrawableQueue();
     }
 }
 //------------------------------------------------------------------------------    
@@ -345,9 +363,9 @@ void SceneNode::rebaseChildrenToNewParent(SNodePtr newParent)
             newParent->addChild(child);
 
         children.clear();
-    }
 
-    setNeedUpdateDrawableQueue();
+        setNeedUpdateDrawableQueue();
+    }
 }       
 //------------------------------------------------------------------------------
 void SceneNode::attachObject(ObjPtr object, int objectDrawOrder)
@@ -371,18 +389,18 @@ void SceneNode::attachObject(ObjPtr object, int objectDrawOrder)
 
                 setNeedUpdateDrawableQueue();
 	    } else {
-		ae::Logger::getInstance().write(
+		Logger::getInstance().write(
 		    "WARNING",
 		    "Object " + object->getName() +
-		    "was not attached because an object of the " 
+		    " was not attached because an object of the " 
 		    "same name was already attached to this node");
 	    }
 	    
 	} else {
-	    ae::Logger::getInstance().write(
+	    Logger::getInstance().write(
 		"WARNING",
 		"Object " + object->getName() +
-		"was not attached because an object already "
+		" was not attached because an object already "
 		"attached to " + object->getParentSceneNode()->name); 
 	}
     }
@@ -398,10 +416,10 @@ void SceneNode::detachObject(ObjPtr object)
         
         setNeedUpdateDrawableQueue();
     } else {
-	ae::Logger::getInstance().write(
+	Logger::getInstance().write(
 	    "WARNING",
 	    "Object named " + object->getName() +
-	    "is not attached to " + name);
+	    " is not attached to " + name);
     }
 }
 //------------------------------------------------------------------------------    
@@ -418,9 +436,10 @@ ObjPtr SceneNode::detachObject(const std::string& objectName)
 
         return ret;
     } else {
-	ae::Logger::getInstance().write(
+	Logger::getInstance().write(
 	    "WARNING",
 	    "Object named " + objectName + " is not attached to this node");
+        return nullptr;
     }
 }	
 //------------------------------------------------------------------------------
@@ -440,9 +459,10 @@ ObjPtr SceneNode::getAttachedObject(const std::string& objectName)
     if(itr != attachedObjects.end()) {
 	return *itr;
     } else {
-	ae::Logger::getInstance().write(
+	Logger::getInstance().write(
 	    "WARNING",
-	    "Object " + objectName + " not found in " + name);
+            "Object " + objectName + " not found in " + name);
+        return nullptr;
     }
 }
 //------------------------------------------------------------------------------
@@ -478,6 +498,11 @@ std::vector<SNodePtr> SceneNode::getDrawableChildren()
 
     return vect; 
 }
+//------------------------------------------------------------------------------
+const std::vector<SNodePtr>& SceneNode::getChildren()
+{
+    return children;
+}
 //------------------------------------------------------------------------------    
 void SceneNode::setDrawOrder(int _drawOrder)
 {
@@ -504,6 +529,8 @@ void SceneNode::changeObjectDrawOrder(const std::string &objName,
     
     if(itr != attachedObjects.end()) {
 	(*itr)->setDrawOrder(newDrawOrder);
+        sortObjectsByDrawOrder();
+        setNeedUpdateDrawableQueue();
     } else {
 	ae::Logger::getInstance().write(
 	    "WARNING",
@@ -517,18 +544,14 @@ void SceneNode::changeObjectDrawOrder(ObjPtr obj, int newDrawOrder)
     
     if(itr != attachedObjects.end()) {
 	obj->setDrawOrder(newDrawOrder);
-        sortObjectsByDrawOrder();
+        sortObjectsByDrawOrder(); // TODO: this call twice: there and in update
+                                  // after object set flag. Need fix
+        setNeedUpdateDrawableQueue();
     } else {
 	ae::Logger::getInstance().write(
 	    "WARNING",
 	    "Object " + obj->getName() + " not found in " + name);
     }
-}
-//------------------------------------------------------------------------------
-int SceneNode::getDescendantCount()
-{
-    for(auto child : children)
-	return children.size() + child->getDescendantCount();
 }
 //------------------------------------------------------------------------------
 void SceneNode::setNeedSortAttachedObjects()
@@ -540,12 +563,15 @@ bool SceneNode::isNeedUpdateDrawableQueue()
 {
     return needUpdateDrawableQueue;
 }
+//------------------------------------------------------------------------------
+bool SceneNode::isNeedUpdateNodesCommonPool()
+{
+    return needUpdateNodesCommonPool;
+}
 //------------------------------------------------------------------------------    
 void SceneNode::setOrigin(const Vector2f& origin)
 {
-    this->Transformable::setOrigin(origin);
-    for(auto& obj : attachedObjects)
-        obj->setOrigin(origin);
+    setOrigin(origin.x, origin.y);
 }
 //------------------------------------------------------------------------------    
 void SceneNode::setOrigin(float x, float y)
@@ -557,9 +583,7 @@ void SceneNode::setOrigin(float x, float y)
 //------------------------------------------------------------------------------
 void SceneNode::setScale(const Vector2f& factors)
 {
-    this->Transformable::setScale(factors);
-    for(auto& obj : attachedObjects)
-        obj->setScale(factors);
+    setScale(factors.x, factors.y);
 }
 //------------------------------------------------------------------------------
 void SceneNode::setScale(float factorX, float factorY)
@@ -571,9 +595,7 @@ void SceneNode::setScale(float factorX, float factorY)
 //------------------------------------------------------------------------------
 void SceneNode::setPosition(const Vector2f& position)
 {
-    this->Transformable::setPosition(position);
-    for(auto& obj : attachedObjects)
-        obj->setPosition(position);
+    setPosition(position.x, position.y);
 }
 //------------------------------------------------------------------------------
 void SceneNode::setPosition(float x, float y)
@@ -592,9 +614,7 @@ void SceneNode::setRotation(const float angle)
 //------------------------------------------------------------------------------        
 void SceneNode::move(const Vector2f& offset)
 {
-    this->Transformable::move(offset);
-    for(auto& obj : attachedObjects)
-        obj->setPosition(offset);
+    move(offset.x, offset.y);
 }
 //------------------------------------------------------------------------------
 void SceneNode::move(float offsetX, float offsetY)
@@ -611,11 +631,9 @@ void SceneNode::rotate(const float angle)
         obj->rotate(angle);
 }
 //------------------------------------------------------------------------------    
-void SceneNode::scale(const Vector2f& factor)
+void SceneNode::scale(const Vector2f& factors)
 {
-    this->Transformable::scale(factor);
-    for(auto& obj : attachedObjects)
-        obj->scale(factor);
+    scale(factors.x, factors.y);
 }
 //------------------------------------------------------------------------------
 void SceneNode::scale(float factorX, float factorY)
@@ -627,13 +645,7 @@ void SceneNode::scale(float factorX, float factorY)
 //------------------------------------------------------------------------------    
 void SceneNode::setOriginRecursive(const ae::Vector2f& origin)
 {
-    this->setOrigin(origin);
-
-    for(auto& obj : attachedObjects)
-	obj->setOrigin(origin);
-
-    for(auto& child : children)
-        child->setOriginRecursive(origin);
+    setOriginRecursive(origin.x, origin.y);
 }
 //------------------------------------------------------------------------------    
 void SceneNode::setOriginRecursive(float x, float y)
@@ -649,13 +661,7 @@ void SceneNode::setOriginRecursive(float x, float y)
 //------------------------------------------------------------------------------    
 void SceneNode::setScaleRecursive(const ae::Vector2f& factors)
 {
-    this->setScale(factors);
-
-    for(auto& obj : attachedObjects)
-	obj->setScale(factors);
-
-    for(auto& child : children)
-        child->setScaleRecursive(factors);
+    setScaleRecursive(factors.x, factors.y);
 }
 //------------------------------------------------------------------------------    
 void SceneNode::setScaleRecursive(float factorX, float factorY)
@@ -671,13 +677,7 @@ void SceneNode::setScaleRecursive(float factorX, float factorY)
 //------------------------------------------------------------------------------
 void SceneNode::setPositionRecursive(const ae::Vector2f& position)
 {
-    this->setPosition(position);
-
-    for(auto& obj : attachedObjects)
-	obj->setPosition(position);
-
-    for(auto& child : children)
-        child->setPositionRecursive(position);
+    setPositionRecursive(position.x, position.y);
 }
 //------------------------------------------------------------------------------
 void SceneNode::setPositionRecursive(float x, float y)
@@ -704,13 +704,7 @@ void SceneNode::setRotationRecursive(const float angle)
 //------------------------------------------------------------------------------
 void SceneNode::moveRecursive(const Vector2f& offset)
 {
-    this->move(offset);
-
-    for(auto& obj : attachedObjects)
-	obj->move(offset);
-
-    for(auto& child : children)
-        child->moveRecursive(offset);
+    moveRecursive(offset.x, offset.y);
 }
 //------------------------------------------------------------------------------
 void SceneNode::moveRecursive(float offsetX, float offsetY)
@@ -721,7 +715,7 @@ void SceneNode::moveRecursive(float offsetX, float offsetY)
 	obj->move(offsetX, offsetY);
 
     for(auto& child : children)
-        child->move(offsetX, offsetY);
+        child->moveRecursive(offsetX, offsetY);
 }
 //------------------------------------------------------------------------------
 void SceneNode::rotateRecursive(const float angle)
@@ -735,15 +729,9 @@ void SceneNode::rotateRecursive(const float angle)
         child->rotateRecursive(angle);
 }
 //------------------------------------------------------------------------------    
-void SceneNode::scaleRecursive(const Vector2f& factor)
+void SceneNode::scaleRecursive(const Vector2f& factors)
 {
-    this->scale(factor);
-
-    for(auto& obj : attachedObjects)
-	obj->scale(factor);
-
-    for(auto& child : children)
-        child->scaleRecursive(factor);
+    scaleRecursive(factors.x, factors.y);
 }
 //------------------------------------------------------------------------------
 void SceneNode::scaleRecursive(float factorX, float factorY)
@@ -765,15 +753,26 @@ void SceneNode::update()
 
         if(needSortAttachedObjects)
             sortObjectsByDrawOrder();
-        
-        if(needUpdateDrawableQueue) {
+
+        if(needUpdateDrawableQueue && needUpdateNodesCommonPool) {
             if(auto pptr = parent.lock()) {
                 pptr->setNeedUpdateDrawableQueue(true);
-            }
-        }
-        else {
-            if(auto pptr = parent.lock()) {
-                pptr->setNeedUpdateDrawableQueue(false);
+                setNeedUpdateDrawableQueue(false);
+
+                pptr->setNeedUpdateNodesCommonPool(true);
+                setNeedUpdateNodesCommonPool(false);
+            }            
+        } else {
+            if(needUpdateDrawableQueue) {
+                if(auto pptr = parent.lock()) {
+                    pptr->setNeedUpdateDrawableQueue(true);
+                    setNeedUpdateDrawableQueue(false);
+                }
+            } else if(needUpdateNodesCommonPool) {
+                if(auto pptr = parent.lock()) {
+                    pptr->setNeedUpdateNodesCommonPool(true);
+                    setNeedUpdateNodesCommonPool(false);
+                }
             }
         }
     }        

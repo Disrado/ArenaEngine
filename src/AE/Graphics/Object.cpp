@@ -85,6 +85,8 @@ std::shared_ptr<ae::SceneNode> Object::getParentSceneNode()
 {
     if(attached)
 	return parentNode.lock();
+    else
+        return nullptr;
 }
 
 } // namespace ae

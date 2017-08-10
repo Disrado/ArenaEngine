@@ -18,11 +18,10 @@ class SFML_GRAPHICS_API Object : public Drawable,
 {
 private:
     std::string name;
+    int drawOrder;
     bool visible;
     bool attached;
     std::weak_ptr<ae::SceneNode> parentNode;
-    // This field need only wile object attached to SceneNode
-    int drawOrder;
     
 public:
     Object();
@@ -48,11 +47,6 @@ public:
     std::shared_ptr<ae::SceneNode> getParentSceneNode();
 
     virtual void draw(RenderTarget& target, RenderStates states) const = 0;
-
-    bool operator< (const Object& right)
-    {
-        return this->drawOrder < right.drawOrder;
-    }
 };
 
 } // namespace ae

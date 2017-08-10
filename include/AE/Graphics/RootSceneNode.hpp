@@ -3,15 +3,12 @@
 
 #include <AE/Graphics/SceneNode.hpp>
 
-
 namespace ae
 {
 
 class SFML_GRAPHICS_API RootSceneNode : public SceneNode
 {
 public:
-    typedef std::vector<std::shared_ptr<ae::Object>> ObjectQueue;
-    
     RootSceneNode(bool                visible = true,
 		  const ae::Vector2f& position = ae::Vector2f(),
 		  const ae::Vector2f& scale = ae::Vector2f(1, 1),
@@ -21,17 +18,17 @@ public:
     void draw(RenderTarget& target, RenderStates states) const;
     
 private:
-    /// Because RootSceneNode cannot have parent
+    //* Because RootSceneNode cannot have parent
     using SceneNode::getParent;
     using SceneNode::rebaseToNewParent;
     
-    /// Because all children is children of RootSceneNode
+    //* Because all children is children of RootSceneNode
     using SceneNode::rebaseChildrenToNewParent;
 
-    /// Because RootSceneNode have constant name "RootSceneNode"
+    //* Because RootSceneNode have constant name "RootSceneNode"
     using SceneNode::setName;
 
-    /// Because RootSceneNode cannot have brothers
+    //* Because RootSceneNode cannot have brothers
     using SceneNode::setDrawOrder;
     using SceneNode::getDrawOrder;
 

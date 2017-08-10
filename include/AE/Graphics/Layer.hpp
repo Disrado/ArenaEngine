@@ -5,8 +5,11 @@
 #include <AE/Graphics/Updatable.hpp>
 #include <AE/Graphics/Drawable.hpp>
 #include <AE/Graphics/Object.hpp>
+#include <AE/System/Logger.hpp>
 #include <memory>
 #include <vector>
+#include <unordered_map>
+
 
 namespace ae
 {
@@ -15,16 +18,23 @@ class SFML_GRAPHICS_API Layer : public Drawable,
                                 public Updatable
 {
 public:
-    typedef std::vector<std::shared_ptr<Object>> ObjectQueue;
-    typedef std::shared_ptr<RootSceneNode>       RootPtr;
+    typedef std::vector<std::shared_ptr<Object>>         ObjectQueue;
+    typedef std::shared_ptr<RootSceneNode>               RootPtr;
+    typedef std::unordered_multimap<std::string,
+                                    SceneNode::SNodePtr> SceneNodeMap;
 
-private:
+public:
     RootPtr rootSceneNode;
     ObjectQueue drawableQueue;
+    SceneNodeMap nodesCommonPool;
     
     int drawOrder;
-    std::string tag;
+    std::string name;
 
+// public is tmp, only for testing    
+public:
+    void updateNodesCommonPool();
+    void buildNodesCommonPool(std::shared_ptr<SceneNode> node);
     void updateDrawableQueue();
     void buildDrawableQueue(std::shared_ptr<SceneNode> node);
     
@@ -33,22 +43,20 @@ public:
     Layer(int _drawOrder, const std::string& _tag);
     
     std::shared_ptr<RootSceneNode> getRootSceneNode();
+    std::shared_ptr<SceneNode> getSceneNode(const std::string& name);
 
-    void setTag(const std::string& _tag);
-    const std::string& getTag();
+    int getNumberAllNodes();
+    
+    void setName(const std::string& newName);
+    const std::string& getName();
     
     void setDrawOrder(int _drawOrder);
     int getDrawOrder() const;
-
+    
     void clear();
 
     void update();
     void draw(RenderTarget& target, RenderStates states) const override;
-
-    bool operator< (const Layer& right)
-    {
-        return this->getDrawOrder() < right.getDrawOrder();
-    }
 };
     
 } //namespace ae

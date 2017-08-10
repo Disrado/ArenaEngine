@@ -1,6 +1,7 @@
 #ifndef SCENENODE_HPP
 #define SCENENODE_HPP
 
+#include <AE/System/Logger.hpp>
 #include <AE/Graphics/Object.hpp>
 #include <AE/Graphics/RenderWindow.hpp>
 #include <AE/Graphics/Updatable.hpp>
@@ -25,7 +26,7 @@ public:
     typedef std::vector<ObjPtr>             ObjectQueue;
     typedef std::vector<SNodePtr>::iterator ChildItr;
     typedef std::vector<ObjPtr>::iterator   ObjItr;
-
+    
     struct Parameters
     {
 	ae::Vector2f        position;
@@ -61,6 +62,12 @@ private:
     //* change his drawOrder
     bool needSortAttachedObjects;
 
+    //* While new node added to child
+    //* or removed from child of any node
+    //* it adding to common pool in RootSceneNode
+    //* for easy acces to it without using parent
+    bool needUpdateNodesCommonPool;
+    
 protected:
     void setParent(SNodePtr _parent);
     void removeParent();
@@ -74,9 +81,7 @@ protected:
     //* Return position, ratotion, origin, scale and visible this node
     //* to child(paremeter)
     void setParentParameters(const Parameters& param);
-
-    void setNeedUpdateDrawableQueue(bool value = true);
-
+    
     void sortChildrenByDrawOrder();
     void sortObjectsByDrawOrder();
     
@@ -132,9 +137,6 @@ public:
     //* Return count of children of this node without grandchildren asf
     virtual int getChildrenCount() const { return children.size(); }
 
-    //* Return count of children of this node with grandchildren asf
-    virtual int getDescendantCount();
-    
     virtual bool isVisible();
     virtual void setVisible(bool _visible);
     virtual bool getVisible();
@@ -148,8 +150,11 @@ public:
     virtual int numAttachedObjects(); // TODO: rename
 
     //* this methods need for build drawable in layer
-    virtual ObjectQueue getDrawableObjects();
-    virtual SceneNodeQueue getDrawableChildren();
+    ObjectQueue getDrawableObjects();
+    SceneNodeQueue getDrawableChildren();
+    const SceneNodeQueue& getChildren();
+    void setNeedUpdateDrawableQueue(bool value = true);
+    void setNeedUpdateNodesCommonPool(bool vaalue = true);
     
     virtual void setDrawOrder(int _drawOrder);
     virtual int getDrawOrder() const { return drawOrder; }
@@ -158,8 +163,9 @@ public:
                                       int newDrawOrder);
     virtual void changeObjectDrawOrder(ObjPtr obj, int newDrawOrder);
 
-    virtual void setNeedSortAttachedObjects();
-    virtual bool isNeedUpdateDrawableQueue();
+    void setNeedSortAttachedObjects();
+    bool isNeedUpdateDrawableQueue();
+    bool isNeedUpdateNodesCommonPool();
     
     virtual void setOrigin(const Vector2f& origin);
     virtual void setOrigin(float x, float y);
@@ -177,7 +183,7 @@ public:
     
     virtual void rotate(const float angle);
     
-    virtual void scale(const Vector2f& factor);
+    virtual void scale(const Vector2f& factors);
     virtual void scale(float factorX, float factorY);
     
     virtual void setOriginRecursive(const Vector2f& origin);
@@ -196,7 +202,7 @@ public:
     
     virtual void rotateRecursive(const float angle);
     
-    virtual void scaleRecursive(const Vector2f& factor);
+    virtual void scaleRecursive(const Vector2f& factors);
     virtual void scaleRecursive(float factorX, float factorY);
 
     virtual void update();

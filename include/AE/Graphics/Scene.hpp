@@ -18,12 +18,12 @@ public:
     Scene();
     virtual ~Scene() {}
 
-    std::shared_ptr<Layer> createLayer(int drawOrder, const std::string& tag = "");
+    std::shared_ptr<Layer> createLayer(int drawOrder, const std::string& name = "");
     void addLayer(std::shared_ptr<Layer> layer);
-    void deleteLayer(const std::string& tag);
+    void deleteLayer(const std::string& name);
     void deleteLayer(std::shared_ptr<Layer> layer);
-    void changeDrawOrder(const std::string& tag, int newDrawOrder);
-    void changeDrawOrder(std::shared_ptr<Layer> layer, int newDrawOrder);
+    void changeLayerDrawOrder(const std::string& name, int newDrawOrder);
+    void changeLayerDrawOrder(std::shared_ptr<Layer> layer, int newDrawOrder);
 
     void update();
     virtual void draw(RenderTarget& target, RenderStates states) const override;

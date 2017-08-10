@@ -1,35 +1,25 @@
-#include <SceneNode_Test.cpp>
+// #include <SceneNode_Test.cpp>
+// #include <Object_Test.cpp>
 
+/*
 int main(int argc, char *argv[])
 {
     ::testing::InitGoogleTest(&argc, argv);
 
     return RUN_ALL_TESTS();
-    
-    return 0;
 }
+*/
 
+#include <AE/Graphics.hpp>
+#include <AE/Window.hpp>
+#include <AE/System.hpp>
+#include <memory>
+#include <iostream>
+#include <string>
+#include <cstdlib>
 
-
-/*
 int main()
 {
-// Unit tests ------------------------------------------------------------------
-    // std::vector<Test*> testClasses
-    // {
-    //     new SceneNode_Test()
-    //     //...
-    // };
-
-    // for(auto itr : testClasses)
-    //     itr->beginTests();
-
-    // for(auto &itr : testClasses)
-    //     delete itr;
-    
-
-// Visual test -----------------------------------------------------------------
-
     auto renderWindow =
         std::shared_ptr<ae::RenderWindow>( new ae::RenderWindow({1280, 720},
                                                                 "AE_Test"));
@@ -41,8 +31,8 @@ int main()
     auto layer = scene->createLayer(0, "firstLayer");
     std::shared_ptr<ae::SceneNode> node[4];
 
-    layer->getRootSceneNode()->setPosition(renderWindow->getSize().x / 2,
-					   renderWindow->getSize().y / 2);
+    layer->getRootSceneNode()->setPosition(renderWindow->getSize().x / 2 - 200,
+					   renderWindow->getSize().y / 2 - 200);
 
     
     for(int i = 0; i < 4; ++i) {
@@ -58,14 +48,13 @@ int main()
 			 node[2]->getParent()->getPosition().y + 100);
     node[3]->setPosition(node[3]->getParent()->getPosition().x + 100,
 			 node[3]->getParent()->getPosition().y + 100);
+    node[3]->setDrawOrder(100);
 
-    
-	    
     ae::SceneManager smgr;
     smgr.addScene(scene);
     
     ae::Texture texture;
-    texture.loadFromFile("arch.png");
+    texture.loadFromFile("test.png");
 
     
     std::shared_ptr<ae::Sprite> sprites[4];
@@ -73,7 +62,6 @@ int main()
 	sprites[i] = std::make_shared<ae::Sprite>(std::to_string(i), texture, true);
 	node[i]->attachObject(sprites[i], 0);
     }
-    
 
     float currentTime;
     float fps;
@@ -88,18 +76,36 @@ int main()
         }
 
 	if (ae::Keyboard::isKeyPressed(ae::Keyboard::Left)) {
-	    layer->getRootSceneNode()->moveRecursive(-0.1, 0);
+	    layer->getRootSceneNode()->moveRecursive(-4, 0);
 	}
 	if (ae::Keyboard::isKeyPressed(ae::Keyboard::Right)) {
-	    layer->getRootSceneNode()->moveRecursive(0.1, 0);
+	    layer->getRootSceneNode()->moveRecursive(4, 0);
 	}
 	if (ae::Keyboard::isKeyPressed(ae::Keyboard::Up)) {
-	    layer->getRootSceneNode()->moveRecursive(0, -0.1);
+	    layer->getRootSceneNode()->moveRecursive(0, -4);
 	}
 	if (ae::Keyboard::isKeyPressed(ae::Keyboard::Down)) {
-	    layer->getRootSceneNode()->moveRecursive(0, 0.1);
+	    layer->getRootSceneNode()->moveRecursive(0, 4);
 	} 
-	
+	if (ae::Keyboard::isKeyPressed(ae::Keyboard::S)) {
+	    layer->getRootSceneNode()->scaleRecursive(1.1, 1.1);
+	}
+        if (ae::Keyboard::isKeyPressed(ae::Keyboard::U)) {
+	    layer->getRootSceneNode()->scaleRecursive(-1.1, -1.1);
+	}
+        if (ae::Keyboard::isKeyPressed(ae::Keyboard::R)) {
+	    layer->getRootSceneNode()->rotateRecursive(5);
+	}
+        if (ae::Keyboard::isKeyPressed(ae::Keyboard::K)) {
+	    layer->getRootSceneNode()->destroyChild(node[std::rand() % 4]);
+        }
+
+        //std::cout << layer->getSceneNode("0")->getName() << std::endl;
+        //std::cout << layer->getSceneNode("1")->getName() << std::endl;
+        //std::cout << layer->getSceneNode("2")->getName() << std::endl;
+        //std::cout << layer->getSceneNode("3")->getName() << std::endl;
+        //std::cout << layer->getSceneNode("RootSceneNode")->getName() << std::endl;
+        
         renderWindow->clear();
         smgr.updateCurrentScene();
         smgr.drawCurrentScene(renderWindow);
@@ -113,4 +119,3 @@ int main()
     }
 }
 
-*/

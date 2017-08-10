@@ -9,8 +9,7 @@ project(AE_Test)
 set(AE_LIBRARIES_DIR ${CMAKE_SOURCE_DIR}/../build/lib/)
 set(GTEST_LIBRARIES_DIR ${CMAKE_SOURCE_DIR}/gtest/lib/)
 
-set(SOURCE_DIR ${CMAKE_SOURCE_DIR}/)
-#set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin/Linux/)
+set(SOURCE_DIR ${CMAKE_SOURCE_DIR}/src/)
 
 #SGML-, TGUI-headers, GTest
 include_directories(${CMAKE_SOURCE_DIR}/../include/)
@@ -20,11 +19,12 @@ include_directories(${CMAKE_SOURCE_DIR}/gtest/include/)
 link_directories(${AE_LIBRARIES_DIR})
 link_directories(${GTEST_LIBRARIES_DIR})
 
-file(GLOB HEADERS
-  "${SOURCE_DIR}/include/*.hpp")
+#file(GLOB HEADERS
+#  "${SOURCE_DIR}/include/*.hpp")
 
 file(GLOB SOURCES
-  "${SOURCE_DIR}/src/*.cpp")
+  "${SOURCE_DIR}/TestCase/*.cpp"
+  "${SOURCE_DIR}/main.cpp")
 
 find_library(AE_GRAPHICS sfml-graphics ${AE_LIBRARIES_DIR})
 find_library(AE_SYSTEM   sfml-system   ${AE_LIBRARIES_DIR})
