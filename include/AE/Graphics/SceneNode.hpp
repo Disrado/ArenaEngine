@@ -205,6 +205,8 @@ public:
     virtual void scaleRecursive(const Vector2f& factors);
     virtual void scaleRecursive(float factorX, float factorY);
 
+    // Update need be called after each methods, that change state of
+    // children and objects
     virtual void update();
     
     virtual void draw(RenderTarget& target, RenderStates states) const override;

@@ -19,12 +19,18 @@ include_directories(${CMAKE_SOURCE_DIR}/gtest/include/)
 link_directories(${AE_LIBRARIES_DIR})
 link_directories(${GTEST_LIBRARIES_DIR})
 
-#file(GLOB HEADERS
-#  "${SOURCE_DIR}/include/*.hpp")
+file(GLOB HEADERS_FOR_UNIT_TESTS
+  "${SOURCE_DIR}/include/*.hpp")
 
-file(GLOB SOURCES
+file(GLOB HEADERS_FOR_VISUAL_TESTS
+  "${SOURCE_DIR}/include/*.hpp")
+
+file(GLOB SOURCES_FOR_UNIT_TESTS
   "${SOURCE_DIR}/TestCase/*.cpp"
-  "${SOURCE_DIR}/main.cpp")
+  "${SOURCE_DIR}/unitTestsMain.cpp")
+
+file(GLOB SOURCES_FOR_VISUAL_TESTS
+  "${SOURCE_DIR}/visualTestsMain.cpp")
 
 find_library(AE_GRAPHICS sfml-graphics ${AE_LIBRARIES_DIR})
 find_library(AE_SYSTEM   sfml-system   ${AE_LIBRARIES_DIR})
@@ -42,9 +48,11 @@ message("")
 
 set(CMAKE_CXX_FLAGS "-std=c++14 -Wall")
 
-add_executable(AE_Test ${SOURCES} ${HEADERS})
+add_executable(unitTests ${SOURCES_FOR_UNIT_TESTS} ${HEADERS_FOR_UNIT_TESTS})
 
-target_link_libraries(AE_Test
+add_executable(visualTests ${SOURCES_FOR_VISUAL_TESTS} ${HEADERS_FOR_VISUAL_TESTS})
+
+target_link_libraries(unitTests
   sfml-system
   sfml-window
   sfml-graphics
@@ -53,4 +61,10 @@ target_link_libraries(AE_Test
 
 enable_testing()
 
-add_test(AE_Test AE_Test)
+add_test(unitTests unitTests)
+
+target_link_libraries(visualTests
+  sfml-system
+  sfml-window
+  sfml-graphics)
+

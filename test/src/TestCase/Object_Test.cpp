@@ -1,3 +1,6 @@
+#ifndef OBJECT_TEST_CPP
+#define OBJECT_TEST_CPP
+
 #include <AE/Graphics.hpp>
 #include <memory>
 #include <gtest/gtest.h>
@@ -51,3 +54,5 @@ TEST(ObjectTest, detachFromParent)
         << "Objce was't removed in parent";
 }
 //------------------------------------------------------------------------------
+
+#endif //OBJECT_TEST_CPP
