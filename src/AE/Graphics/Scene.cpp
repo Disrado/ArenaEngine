@@ -3,76 +3,114 @@
 namespace ae
 {
     
-Scene::Scene() :
-    layers(std::set<std::shared_ptr<Layer>>())
+Scene::Scene(const std::string& _name) :
+    name(_name)
 { }
 
-std::shared_ptr<Layer> Scene::createLayer(int drawOrder, const std::string& tag)
+Scene::ScenePtr Scene::create(const std::string& name)
 {
-    auto newLayer = std::make_shared<Layer>(drawOrder, tag);
-    layers.insert(newLayer);
+    return std::make_shared<Scene>(name);
+}
+    
+Scene::LayerItr Scene::getLayerItr(const std::string& name)
+{
+    return std::find_if(begin(layers), end(layers),
+                        [&name](Layer::LayerPtr lhs)
+                        {
+                            return lhs->getName() == name;
+                        });   
+}
 
+Scene::LayerItr Scene::getLayerItr(const Layer::LayerPtr layer)
+{
+    return std::find(begin(layers), end(layers), layer);
+}
+
+void Scene::sortLayersByDrawOrder()
+{
+    std::sort(begin(layers), end(layers),
+              [](const Layer::LayerPtr lhs, const Layer::LayerPtr rhs)
+              {
+                  return lhs->getDrawOrder() < rhs->getDrawOrder();
+              });	
+}
+    
+Layer::LayerPtr Scene::createLayer(const std::string& name, int drawOrder)
+{
+    auto newLayer = std::make_shared<Layer>(name, drawOrder);
+    layers.push_back(newLayer);
+    newLayer->notifyAddedOnScene();
+    sortLayersByDrawOrder();
+    
     return newLayer;
 }
     
-void Scene::addLayer(std::shared_ptr<Layer> layer)
+void Scene::addLayer(Layer::LayerPtr layer)
 {
-    if(layer)
-        layers.insert(layer);
+    if(!layer)
+	return;
+
+    if(!layer->isOnScene()) {
+	layers.push_back(layer);
+	layer->notifyAddedOnScene();
+	sortLayersByDrawOrder();
+    }
 }
     
-void Scene::deleteLayer(const std::string& tag)
+void Scene::deleteLayer(const std::string& name)
 {
-    auto itr = std::find_if(layers.begin(), layers.end(),
-                            [&tag](const std::shared_ptr<Layer>& item) -> bool
-                            {
-                                return item->getTag() == tag;
-                            });
+    auto itr = getLayerItr(name);
     
     if(itr != layers.end()) {
-        layers.erase(itr);        
+	layers.erase(itr);
+	(*itr)->notifyRemovedFromScene();
     }
 }
 
-void Scene::deleteLayer(std::shared_ptr<Layer> layer)
+void Scene::deleteLayer(Layer::LayerPtr layer)
 {
-    if(layer) {
-        auto itr = layers.find(layer);
-        
-        if(itr != layers.end()) {
-            layers.erase(itr);        
-        }
-    }    
+    if(!layer)
+	return;
+    
+    if(!layer->isOnScene()) {
+	auto itr = getLayerItr(layer);
+    
+	if(itr != layers.end()) {
+	    layers.erase(itr);
+	    layer->notifyRemovedFromScene();
+	}
+    }
 }
          
-void Scene::changeDrawOrder(const std::string& tag, int newDrawOrder)
+void Scene::changeLayerDrawOrder(const std::string& name, int newDrawOrder)
 {
-    auto itr = std::find_if(layers.begin(), layers.end(),
-                            [&tag](const std::shared_ptr<Layer>& item) -> bool
-                            {
-                                return item->getTag() == tag;
-                            });
+    auto itr = getLayerItr(name);
 
     if(itr != layers.end()) {
-        auto layer = *itr;
-        layers.erase(itr);
-        layer->setDrawOrder(newDrawOrder);
-        layers.insert(layer);
+        (*itr)->setDrawOrder(newDrawOrder);
+	sortLayersByDrawOrder();
     }
 }
     
-void Scene::changeDrawOrder(std::shared_ptr<Layer> layer, int newDrawOrder)
+void Scene::changeLayerDrawOrder(Layer::LayerPtr layer, int newDrawOrder)
 {
-    auto itr = layers.find(layer);
-        
+    if(!layer)
+	return;
+
+    auto itr = getLayerItr(name);
+
     if(itr != layers.end()) {
-        auto layer = *itr;
-        layers.erase(itr);
         layer->setDrawOrder(newDrawOrder);
-        layers.insert(layer);
+	sortLayersByDrawOrder();
     }
 }
 
+void Scene::update()
+{
+    for(auto layer : layers)
+        layer->update();
+}
+    
 void Scene::draw(RenderTarget& target, RenderStates states) const
 {
     for(auto layer : layers)

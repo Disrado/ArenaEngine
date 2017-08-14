@@ -73,6 +73,10 @@ m_cacheId      (getUniqueId())
 {
 }
 
+std::shared_ptr<Texture> Texture::create()
+{
+    return std::make_shared<Texture>();
+}
 
 ////////////////////////////////////////////////////////////
 Texture::Texture(const Texture& copy) :

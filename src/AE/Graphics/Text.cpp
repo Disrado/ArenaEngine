@@ -34,7 +34,13 @@
 namespace
 {
     // Add an underline or strikethrough line to the vertex array
-    void addLine(ae::VertexArray& vertices, float lineLength, float lineTop, const ae::Color& color, float offset, float thickness, float outlineThickness = 0)
+    void addLine(ae::VertexArray& vertices,
+		 float            lineLength,
+		 float            lineTop,
+		 const ae::Color& color,
+		 float            offset,
+		 float            thickness,
+		 float            outlineThickness = 0)
     {
         float top = std::floor(lineTop + offset - (thickness / 2) + 0.5f);
         float bottom = top + std::floor(thickness + 0.5f);
@@ -48,7 +54,12 @@ namespace
     }
 
     // Add a glyph quad to the vertex array
-    void addGlyphQuad(ae::VertexArray& vertices, ae::Vector2f position, const ae::Color& color, const ae::Glyph& glyph, float italic, float outlineThickness = 0)
+    void addGlyphQuad(ae::VertexArray& vertices,
+		      ae::Vector2f     position,
+		      const ae::Color& color,
+		      const ae::Glyph& glyph,
+		      float            italic,
+		      float            outlineThickness = 0)
     {
         float left   = glyph.bounds.left;
         float top    = glyph.bounds.top;
@@ -60,12 +71,30 @@ namespace
         float u2 = static_cast<float>(glyph.textureRect.left + glyph.textureRect.width);
         float v2 = static_cast<float>(glyph.textureRect.top  + glyph.textureRect.height);
 
-        vertices.append(ae::Vertex(ae::Vector2f(position.x + left  - italic * top    - outlineThickness, position.y + top    - outlineThickness), color, ae::Vector2f(u1, v1)));
-        vertices.append(ae::Vertex(ae::Vector2f(position.x + right - italic * top    - outlineThickness, position.y + top    - outlineThickness), color, ae::Vector2f(u2, v1)));
-        vertices.append(ae::Vertex(ae::Vector2f(position.x + left  - italic * bottom - outlineThickness, position.y + bottom - outlineThickness), color, ae::Vector2f(u1, v2)));
-        vertices.append(ae::Vertex(ae::Vector2f(position.x + left  - italic * bottom - outlineThickness, position.y + bottom - outlineThickness), color, ae::Vector2f(u1, v2)));
-        vertices.append(ae::Vertex(ae::Vector2f(position.x + right - italic * top    - outlineThickness, position.y + top    - outlineThickness), color, ae::Vector2f(u2, v1)));
-        vertices.append(ae::Vertex(ae::Vector2f(position.x + right - italic * bottom - outlineThickness, position.y + bottom - outlineThickness), color, ae::Vector2f(u2, v2)));
+        vertices.append(ae::Vertex(ae::Vector2f(position.x + left   - italic * top - outlineThickness,
+						position.y + top    - outlineThickness),
+				   color,
+				   ae::Vector2f(u1, v1)));
+        vertices.append(ae::Vertex(ae::Vector2f(position.x + right  - italic * top - outlineThickness,
+						position.y + top    - outlineThickness),
+				   color,
+				   ae::Vector2f(u2, v1)));
+        vertices.append(ae::Vertex(ae::Vector2f(position.x + left   - italic * bottom - outlineThickness,
+						position.y + bottom - outlineThickness),
+				   color,
+				   ae::Vector2f(u1, v2)));
+        vertices.append(ae::Vertex(ae::Vector2f(position.x + left   - italic * bottom - outlineThickness,
+						position.y + bottom - outlineThickness),
+				   color,
+				   ae::Vector2f(u1, v2)));
+        vertices.append(ae::Vertex(ae::Vector2f(position.x + right - italic * top    - outlineThickness,
+						position.y + top    - outlineThickness),
+				   color,
+				   ae::Vector2f(u2, v1)));
+        vertices.append(ae::Vertex(ae::Vector2f(position.x + right - italic * bottom - outlineThickness,
+						position.y + bottom - outlineThickness),
+				   color,
+				   ae::Vector2f(u2, v2)));
     }
 }
 
@@ -74,40 +103,58 @@ namespace ae
 {
 ////////////////////////////////////////////////////////////
 Text::Text() :
-m_string            (),
-m_font              (NULL),
-m_characterSize     (30),
-m_style             (Regular),
-m_fillColor         (255, 255, 255),
-m_outlineColor      (0, 0, 0),
-m_outlineThickness  (0),
-m_vertices          (Triangles),
-m_outlineVertices   (Triangles),
-m_bounds            (),
-m_geometryNeedUpdate(false)
+    m_string            (),
+    m_font              (NULL),
+    m_characterSize     (30),
+    m_style             (Regular),
+    m_fillColor         (255, 255, 255),
+    m_outlineColor      (0, 0, 0),
+    m_outlineThickness  (0),
+    m_vertices          (Triangles),
+    m_outlineVertices   (Triangles),
+    m_bounds            (),
+    m_geometryNeedUpdate(false)
 {
 
 }
 
 
 ////////////////////////////////////////////////////////////
-Text::Text(const String& string, const Font& font, unsigned int characterSize) :
-m_string            (string),
-m_font              (&font),
-m_characterSize     (characterSize),
-m_style             (Regular),
-m_fillColor         (255, 255, 255),
-m_outlineColor      (0, 0, 0),
-m_outlineThickness  (0),
-m_vertices          (Triangles),
-m_outlineVertices   (Triangles),
-m_bounds            (),
-m_geometryNeedUpdate(true)
+Text::Text(const std::string& name,
+	   const String&      string,
+	   const Font&        font,
+	   unsigned int       characterSize,
+	   bool               visible) :
+    Object(name, visible),
+    m_string            (string),
+    m_font              (&font),
+    m_characterSize     (characterSize),
+    m_style             (Regular),
+    m_fillColor         (255, 255, 255),
+    m_outlineColor      (0, 0, 0),
+    m_outlineThickness  (0),
+    m_vertices          (Triangles),
+    m_outlineVertices   (Triangles),
+    m_bounds            (),
+    m_geometryNeedUpdate(true)
 {
 
 }
 
-
+std::shared_ptr<Text> Text::create()
+{
+    return std::make_shared<Text>();
+}
+    
+std::shared_ptr<Text> Text::create(const std::string& name,
+				   const String&      string,
+				   const Font&        font,
+				   unsigned int       characterSize,
+				   bool               visible)
+{
+    return std::make_shared<Text>(name, string, font, characterSize, visible);
+}
+    
 ////////////////////////////////////////////////////////////
 void Text::setString(const String& string)
 {

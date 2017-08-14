@@ -49,6 +49,7 @@ set(SRC
     ${INCROOT}/View.hpp
     ${SRCROOT}/Vertex.cpp
     ${INCROOT}/Vertex.hpp
+    ${INCROOT}/Updatable.hpp
 )
 if(NOT SFML_OPENGL_ES)
     list(APPEND SRC ${SRCROOT}/GLLoader.cpp)
@@ -73,9 +74,12 @@ set(DRAWABLES_SRC
     ${INCROOT}/Text.hpp
     ${SRCROOT}/VertexArray.cpp
     ${INCROOT}/VertexArray.hpp
+    ${SRCROOT}/Object.cpp
     ${INCROOT}/Object.hpp
     ${SRCROOT}/SceneNode.cpp
     ${INCROOT}/SceneNode.hpp
+    ${SRCROOT}/RootSceneNode.cpp
+    ${INCROOT}/RootSceneNode.hpp
     ${SRCROOT}/Layer.cpp
     ${INCROOT}/Layer.hpp
     ${SRCROOT}/Scene.cpp

@@ -43,7 +43,8 @@ namespace ae
 class SFML_GRAPHICS_API Shape : public Object
 {
 public:
-
+    Shape(const std::string name, bool visible);
+    
     ////////////////////////////////////////////////////////////
     /// \brief Virtual destructor
     ///

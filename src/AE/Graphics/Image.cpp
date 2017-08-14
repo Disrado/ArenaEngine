@@ -48,7 +48,12 @@ m_size(0, 0)
     #endif
 }
 
+std::shared_ptr<Image> Image::create()
+{
+    return std::make_shared<Image>();
+}
 
+    
 ////////////////////////////////////////////////////////////
 Image::~Image()
 {

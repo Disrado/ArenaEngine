@@ -30,10 +30,21 @@
 
 namespace ae
 {
+    
 ////////////////////////////////////////////////////////////
-ConvexShape::ConvexShape(std::size_t pointCount)
+ConvexShape::ConvexShape(const std::string& name,
+			 std::size_t pointCount,
+			 bool visible) :
+    Shape(name, visible)
 {
     setPointCount(pointCount);
+}
+
+std::shared_ptr<ConvexShape> ConvexShape::create(const std::string& name,
+						 std::size_t pointCount,
+						 bool visible)
+{
+    return std::make_shared<ConvexShape>(name, pointCount, visible);
 }
 
 

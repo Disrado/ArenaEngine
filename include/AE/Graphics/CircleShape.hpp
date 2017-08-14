@@ -49,8 +49,16 @@ public:
     /// \param pointCount Number of points composing the circle
     ///
     ////////////////////////////////////////////////////////////
-    explicit CircleShape(float radius = 0, std::size_t pointCount = 30);
+    explicit CircleShape(const std::string& name,
+			 float radius = 0,
+			 std::size_t pointCount = 30,
+			 bool visible = 0);
 
+    static std::shared_ptr<CircleShape> create(const std::string& name,
+					       float radius = 0,
+					       std::size_t pointCount = 30,
+					       bool visible = 0);
+    
     ////////////////////////////////////////////////////////////
     /// \brief Set the radius of the circle
     ///

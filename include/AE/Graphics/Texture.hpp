@@ -31,6 +31,7 @@
 #include <AE/Graphics/Export.hpp>
 #include <AE/Graphics/Image.hpp>
 #include <AE/Window/GlResource.hpp>
+#include <memory>
 
 
 namespace ae
@@ -67,6 +68,8 @@ public:
     ///
     ////////////////////////////////////////////////////////////
     Texture();
+
+    static std::shared_ptr<Texture> create();
 
     ////////////////////////////////////////////////////////////
     /// \brief Copy constructor

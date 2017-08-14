@@ -80,6 +80,10 @@ m_info     ()
     #endif
 }
 
+std::shared_ptr<Font> Font::create()
+{
+    return std::make_shared<Font>();
+}
 
 ////////////////////////////////////////////////////////////
 Font::Font(const Font& copy) :

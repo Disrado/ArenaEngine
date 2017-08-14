@@ -78,6 +78,12 @@ public:
                  Uint32 style = Style::Default,
                  const ContextSettings& settings = ContextSettings());
 
+    static std::shared_ptr<RenderWindow> create();
+    static std::shared_ptr<RenderWindow> create(VideoMode mode,
+						const String& title,
+						Uint32 style = Style::Default,
+						const ContextSettings& settings = ContextSettings());
+    
     ////////////////////////////////////////////////////////////
     /// \brief Construct the window from an existing control
     ///
