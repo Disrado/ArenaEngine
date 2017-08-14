@@ -221,11 +221,11 @@ TEST(SceneNodeTest, getDrawableObjects)
     for(int i(0); i < 10; ++i) {
         auto sprite = std::make_shared<ae::Sprite>(std::to_string(i));
         SNode->attachObject(sprite);
-        if(i < 5)
+        if(i < 5) // Set visible 5/10 objects
             sprite->setVisible(false);
     }
         
-    ASSERT_EQ(SNode->getDrawableObjects().size(), 5)
+    ASSERT_EQ(SNode->getDrawableObjects().size(), 5u)
         << "Incorect size of returned vector";
 }
 //------------------------------------------------------------------------------
@@ -239,7 +239,7 @@ TEST(SceneNodeTest, getDrawableChildren)
             node->setVisible(false);
     }
         
-    ASSERT_EQ(SNode->getDrawableChildren().size(), 5)
+    ASSERT_EQ(SNode->getDrawableChildren().size(), 5u)
         << "Incorect size of returned vector";
 }
 //------------------------------------------------------------------------------

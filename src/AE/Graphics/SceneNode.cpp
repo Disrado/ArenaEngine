@@ -185,31 +185,32 @@ void SceneNode::setVisibleRecursive(bool _visible)
 //------------------------------------------------------------------------------    
 void SceneNode::addChild(SNodePtr child)
 {
-    if(child) {
-	SNodePtr parent = parent = child->parent.lock();
-	if(!parent) {
-            // Check if child does't already exist as children of this node
-            if(getChildItr(child) == children.end()) {
-                children.push_back(child);
-                
-                child->setParent(shared_from_this());
-		child->setParentParameters(this->getParameters());
+    if(!child)
+	return;
 
-                setNeedUpdateNodesCommonPool();
-                setNeedUpdateDrawableQueue();
-	    } else {
-		Logger::getInstance().write(
-		    "WARNING",
-		    "Node " + child->name +
-		    "was not attached because an node "
-		    "was already attached to this node");
-	    }
+    SNodePtr parent = parent = child->parent.lock();
+    if(!parent) {
+	// Check if child does't already exist as children of this node
+	if(getChildItr(child) == children.end()) {
+	    children.push_back(child);
+                
+	    child->setParent(shared_from_this());
+	    child->setParentParameters(this->getParameters());
+
+	    setNeedUpdateNodesCommonPool();
+	    setNeedUpdateDrawableQueue();
 	} else {
 	    Logger::getInstance().write(
 		"WARNING",
-		"SceneNode " + child->name +
-		"already was a child of " + parent->name);
-        }
+		"Node " + child->name +
+		"was not attached because an node "
+		"was already attached to this node");
+	}
+    } else {
+	Logger::getInstance().write(
+	    "WARNING",
+	    "SceneNode " + child->name +
+	    "already was a child of " + parent->name);
     }
 }
 //------------------------------------------------------------------------------
@@ -370,39 +371,37 @@ void SceneNode::rebaseChildrenToNewParent(SNodePtr newParent)
 //------------------------------------------------------------------------------
 void SceneNode::attachObject(ObjPtr object, int objectDrawOrder)
 {
-    if(object){
-	if(!object->isAttached()) {
+    if(!object)
+	return;
+
+    if(!object->isAttached()) {
+	auto itr = getObjectItr(object);
             
-            auto itr = getObjectItr(object);
-            
-	    if(itr == attachedObjects.end()) {
-                attachedObjects.push_back(object);
+	if(itr == attachedObjects.end()) {
+	    attachedObjects.push_back(object);
                 
-                object->notifyAttached(shared_from_this());
-                object->setDrawOrder(objectDrawOrder);
+	    object->notifyAttached(shared_from_this());
+	    object->setDrawOrder(objectDrawOrder);
+	    object->setOrigin(getOrigin());
+	    object->setScale(getScale());
+	    object->setPosition(getPosition());
+	    object->setRotation(getRotation());
+	    object->setVisible(visible);
 
-		object->setOrigin(getOrigin());
-		object->setScale(getScale());
-		object->setPosition(getPosition());
-		object->setRotation(getRotation());
-		object->setVisible(visible);
-
-                setNeedUpdateDrawableQueue();
-	    } else {
-		Logger::getInstance().write(
-		    "WARNING",
-		    "Object " + object->getName() +
-		    " was not attached because an object of the " 
-		    "same name was already attached to this node");
-	    }
-	    
+	    setNeedUpdateDrawableQueue();
 	} else {
 	    Logger::getInstance().write(
 		"WARNING",
 		"Object " + object->getName() +
-		" was not attached because an object already "
-		"attached to " + object->getParentSceneNode()->name); 
+		" was not attached because an object of the " 
+		"same name was already attached to this node");
 	}
+    } else {
+	Logger::getInstance().write(
+	    "WARNING",
+	    "Object " + object->getName() +
+	    " was not attached because an object already "
+	    "attached to " + object->getParentSceneNode()->name); 
     }
 }
 //------------------------------------------------------------------------------

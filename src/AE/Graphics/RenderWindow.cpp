@@ -39,18 +39,33 @@ RenderWindow::RenderWindow()
 
 
 ////////////////////////////////////////////////////////////
-RenderWindow::RenderWindow(VideoMode mode, const String& title, Uint32 style, const ContextSettings& settings)
+RenderWindow::RenderWindow(VideoMode mode,
+			   const String& title,
+			   Uint32 style,
+			   const ContextSettings& settings)
 {
     // Don't call the base class constructor because it contains virtual function calls
-    create(mode, title, style, settings);
+    Window::create(mode, title, style, settings);
 }
 
+std::shared_ptr<RenderWindow> RenderWindow::create()
+{
+    return std::make_shared<RenderWindow>(); 
+}
+    
+std::shared_ptr<RenderWindow> RenderWindow::create(VideoMode mode,
+ 						   const String& title,
+						   Uint32 style,
+ 						   const ContextSettings& settings)
+{
+    return std::make_shared<RenderWindow>(mode, title, style, settings);    
+}
 
 ////////////////////////////////////////////////////////////
 RenderWindow::RenderWindow(WindowHandle handle, const ContextSettings& settings)
 {
     // Don't call the base class constructor because it contains virtual function calls
-    create(handle, settings);
+    Window::create(handle, settings);
 }
 
 

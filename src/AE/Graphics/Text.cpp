@@ -141,7 +141,20 @@ Text::Text(const std::string& name,
 
 }
 
-
+std::shared_ptr<Text> Text::create()
+{
+    return std::make_shared<Text>();
+}
+    
+std::shared_ptr<Text> Text::create(const std::string& name,
+				   const String&      string,
+				   const Font&        font,
+				   unsigned int       characterSize,
+				   bool               visible)
+{
+    return std::make_shared<Text>(name, string, font, characterSize, visible);
+}
+    
 ////////////////////////////////////////////////////////////
 void Text::setString(const String& string)
 {

@@ -18,44 +18,48 @@ class SFML_GRAPHICS_API Layer : public Drawable,
                                 public Updatable
 {
 public:
+    typedef std::shared_ptr<Layer>                       LayerPtr;
     typedef std::vector<std::shared_ptr<Object>>         ObjectQueue;
-    typedef std::shared_ptr<RootSceneNode>               RootPtr;
     typedef std::unordered_multimap<std::string,
                                     SceneNode::SNodePtr> SceneNodeMap;
 
-public:
-    RootPtr rootSceneNode;
-    ObjectQueue drawableQueue;
+private:
+    RootSceneNode::RootSNodePtr rootSceneNode;
     SceneNodeMap nodesCommonPool;
-    
-    int drawOrder;
+    ObjectQueue drawableQueue;
     std::string name;
+    bool onScene;    
+    int drawOrder;
 
-// public is tmp, only for testing    
-public:
     void updateNodesCommonPool();
-    void buildNodesCommonPool(std::shared_ptr<SceneNode> node);
+    void buildNodesCommonPool(SceneNode::SNodePtr node);
     void updateDrawableQueue();
-    void buildDrawableQueue(std::shared_ptr<SceneNode> node);
+    void buildDrawableQueue(SceneNode::SNodePtr node);
     
 public:
-    Layer();
-    Layer(int _drawOrder, const std::string& _tag);
-    
-    std::shared_ptr<RootSceneNode> getRootSceneNode();
-    std::shared_ptr<SceneNode> getSceneNode(const std::string& name);
+    Layer(const std::string& _name, int _drawOrder = 0);
 
+    static LayerPtr create(const std::string& name, int drawOrder);
+    
+    RootSceneNode::RootSNodePtr getRootSceneNode();
+    SceneNode::SNodePtr getSceneNode(const std::string& name);
     int getNumberAllNodes();
     
-    void setName(const std::string& newName);
-    const std::string& getName();
-    
-    void setDrawOrder(int _drawOrder);
-    int getDrawOrder() const;
+    void setName(const std::string& newName) { name = newName; }
+    const std::string& getName() { return name; }
+
+    void setDrawOrder(int newDrawOrder) { drawOrder = newDrawOrder; }
+    int getDrawOrder() const { return drawOrder; }
+
+    // Don't use this methods! It is for Scene class
+    void notifyAddedOnScene() { onScene = true; }
+    void notifyRemovedFromScene() { onScene = false; }
+
+    bool isOnScene() { return onScene; }
     
     void clear();
 
-    void update();
+    void update() override;
     void draw(RenderTarget& target, RenderStates states) const override;
 };
     

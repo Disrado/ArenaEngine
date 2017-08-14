@@ -71,6 +71,30 @@ Sprite::Sprite(const std::string& name,
     setTextureRect(rectangle);
 }
 
+std::shared_ptr<Sprite> Sprite::create()
+{
+    return std::make_shared<Sprite>();
+}
+    
+std::shared_ptr<Sprite> Sprite::create(const std::string& name)
+{
+    return std::make_shared<Sprite>(name);
+}
+    
+std::shared_ptr<Sprite> Sprite::create(const std::string& name,
+				       const Texture&     texture,
+				       bool               visible)
+{
+    return std::make_shared<Sprite>(name, texture, visible);
+}
+    
+std::shared_ptr<Sprite> Sprite::create(const std::string& name,
+				      const Texture&     texture,
+				      const IntRect&     rectangle,
+				      bool               visible)
+{
+    return std::make_shared<Sprite>(name, texture, rectangle, visible);
+}
 
 ////////////////////////////////////////////////////////////
 void Sprite::setTexture(const Texture& texture, bool resetRect)

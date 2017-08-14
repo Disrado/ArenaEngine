@@ -6,12 +6,12 @@ endif ()
 
 project(AE_Test)
 
-set(AE_LIBRARIES_DIR ${CMAKE_SOURCE_DIR}/../build/lib/)
+set(AE_LIBRARIES_DIR    ${CMAKE_SOURCE_DIR}/../build/lib/)
 set(GTEST_LIBRARIES_DIR ${CMAKE_SOURCE_DIR}/gtest/lib/)
 
 set(SOURCE_DIR ${CMAKE_SOURCE_DIR}/src/)
 
-#SGML-, TGUI-headers, GTest
+#SGML, TGUI, GTest
 include_directories(${CMAKE_SOURCE_DIR}/../include/)
 include_directories(${CMAKE_SOURCE_DIR}/src/TestCase/)
 include_directories(${CMAKE_SOURCE_DIR}/gtest/include/)
@@ -35,8 +35,8 @@ file(GLOB SOURCES_FOR_VISUAL_TESTS
 find_library(AE_GRAPHICS sfml-graphics ${AE_LIBRARIES_DIR})
 find_library(AE_SYSTEM   sfml-system   ${AE_LIBRARIES_DIR})
 find_library(AE_WINDOW   sfml-window   ${AE_LIBRARIES_DIR})
-find_library(GTEST_MAIN  gtest_main    ${GTEST_LLIBRARIES_DIR})
-find_library(GTEST       gtest         ${GTEST_LLIBRARIES_DIR})
+find_library(GTEST_MAIN  gtest_main    ${GTEST_LIBRARIES_DIR})
+find_library(GTEST       gtest         ${GTEST_LIBRARIES_DIR})
 
 message("\nCheckings libraries ..." )
 message(STATUS "   ae_graphics: " ${AE_GRAPHICS})

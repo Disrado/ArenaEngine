@@ -40,6 +40,13 @@ ConvexShape::ConvexShape(const std::string& name,
     setPointCount(pointCount);
 }
 
+std::shared_ptr<ConvexShape> ConvexShape::create(const std::string& name,
+						 std::size_t pointCount,
+						 bool visible)
+{
+    return std::make_shared<ConvexShape>(name, pointCount, visible);
+}
+
 
 ////////////////////////////////////////////////////////////
 void ConvexShape::setPointCount(std::size_t count)

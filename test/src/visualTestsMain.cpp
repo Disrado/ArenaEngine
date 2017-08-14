@@ -16,8 +16,8 @@ int main()
                                                                 "AE_Test"));
     renderWindow->setSize(renderWindow->getSize());
     
-    auto scene = std::make_shared<ae::Scene>();
-    auto layer = scene->createLayer(0, "firstLayer");
+    auto scene = std::make_shared<ae::Scene>("MainScene");
+    auto layer = scene->createLayer("firstLayer");
     std::shared_ptr<ae::SceneNode> node[4];
 
     layer->getRootSceneNode()->setPosition(renderWindow->getSize().x / 2 - 200,

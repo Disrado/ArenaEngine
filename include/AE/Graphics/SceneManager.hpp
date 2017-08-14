@@ -2,7 +2,7 @@
 #define SCENEMANAGER_HPP
 
 #include <AE/Graphics/Scene.hpp>
-#include <unordered_set>
+#include <unordered_map>
 #include <memory>
 
 namespace ae
@@ -11,15 +11,18 @@ namespace ae
 class SFML_GRAPHICS_API SceneManager
 {
 private:
-    std::unordered_set<std::shared_ptr<Scene>> scenes;
-    std::shared_ptr<Scene> currentScene;
+    std::unordered_map<std::string, Scene::ScenePtr> scenes;
+    Scene::ScenePtr currentScene;
     
 public:
     SceneManager();
-    void addScene(std::shared_ptr<Scene> newScene);
-    void deleteScene(std::shared_ptr<Scene> scene);
-    void setCurrentScene(std::shared_ptr<Scene> newScene);
-    void replaceCurrentScene(std::shared_ptr<Scene> newScene);
+
+    static std::shared_ptr<SceneManager> create();
+    
+    void addScene(Scene::ScenePtr newScene);
+    void deleteScene(Scene::ScenePtr scene);
+    void setCurrentScene(Scene::ScenePtr newScene);
+    void replaceCurrentScene(Scene::ScenePtr newScene);
     void updateCurrentScene();
     void drawCurrentScene(std::shared_ptr<ae::RenderWindow> renderWindow);
 };

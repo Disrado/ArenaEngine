@@ -2,12 +2,7 @@
 
 namespace ae
 {
-
-namespace
-{
-    typedef ae::RootSceneNode::ObjectQueue ObjectQueue; 
-}
-    
+ 
 RootSceneNode::RootSceneNode(bool                visible,
 			     const ae::Vector2f& position,
 			     const ae::Vector2f& scale,

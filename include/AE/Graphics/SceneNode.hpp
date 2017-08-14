@@ -45,6 +45,7 @@ public:
             visible(snodeForInit->getVisible())
         { }
     };
+    
 private:
     std::string name;
     int drawOrder;

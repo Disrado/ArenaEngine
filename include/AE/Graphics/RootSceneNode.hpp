@@ -9,6 +9,8 @@ namespace ae
 class SFML_GRAPHICS_API RootSceneNode : public SceneNode
 {
 public:
+    typedef std::shared_ptr<RootSceneNode> RootSNodePtr;
+    
     RootSceneNode(bool                visible = true,
 		  const ae::Vector2f& position = ae::Vector2f(),
 		  const ae::Vector2f& scale = ae::Vector2f(1, 1),

@@ -53,6 +53,10 @@ public:
 			 std::size_t pointCount = 0,
 			 bool visible = 0);
 
+    static std::shared_ptr<ConvexShape> create(const std::string& name,
+					       std::size_t pointCount = 0,
+					       bool visible = 0);
+    
     ////////////////////////////////////////////////////////////
     /// \brief Set the number of points of the polygon
     ///

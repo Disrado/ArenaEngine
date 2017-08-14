@@ -4,20 +4,19 @@
 namespace ae
 {
 
-Layer::Layer() :
-    rootSceneNode(std::make_shared<RootSceneNode>())
-{
-    drawableQueue.reserve(1000);
-}
-
-Layer::Layer(int _drawOrder, const std::string& _name) :
+Layer::Layer(const std::string& _name, int _drawOrder) :
     rootSceneNode(std::make_shared<RootSceneNode>()),
     drawOrder(_drawOrder),
-    name(_name)
-{
-    drawableQueue.reserve(1000);
-}
+    name(_name),
+    onScene(false)
+    
+{ }
 
+Layer::LayerPtr Layer::create(const std::string& name, int drawOrder)
+{
+    return std::make_shared<Layer>(name, drawOrder);
+}
+    
 void Layer::updateNodesCommonPool()
 {
     nodesCommonPool.clear();
@@ -31,7 +30,7 @@ void Layer::updateNodesCommonPool()
     rootSceneNode->setNeedUpdateNodesCommonPool(false);
 }
 
-void Layer::buildNodesCommonPool(std::shared_ptr<SceneNode> node)
+void Layer::buildNodesCommonPool(SceneNode::SNodePtr node)
 {
     for(auto child : node->getChildren()) {
         auto children = child->getChildren();
@@ -55,7 +54,7 @@ void Layer::updateDrawableQueue()
     rootSceneNode->setNeedUpdateDrawableQueue(false);
 }
 
-void Layer::buildDrawableQueue(std::shared_ptr<SceneNode> node)
+void Layer::buildDrawableQueue(SceneNode::SNodePtr node)
 {
     for(auto child : node->getDrawableChildren()) {
         if(child->getDrawableObjects().size()) {
@@ -67,12 +66,12 @@ void Layer::buildDrawableQueue(std::shared_ptr<SceneNode> node)
     }
 }
     
-std::shared_ptr<RootSceneNode> Layer::getRootSceneNode()
+RootSceneNode::RootSNodePtr Layer::getRootSceneNode()
 {
     return rootSceneNode;
 }
 
-std::shared_ptr<SceneNode> Layer::getSceneNode(const std::string& name)
+SceneNode::SNodePtr Layer::getSceneNode(const std::string& name)
 {
     if(nodesCommonPool.empty())
 	return nullptr;
@@ -92,26 +91,6 @@ std::shared_ptr<SceneNode> Layer::getSceneNode(const std::string& name)
 int Layer::getNumberAllNodes()
 {
     return nodesCommonPool.size();
-}
-    
-void Layer::setName(const std::string& newName)
-{
-    name = newName;
-}
-    
-const std::string& Layer::getName()
-{
-    return name;
-}
-    
-void Layer::setDrawOrder(int _drawOrder)
-{
-    drawOrder = _drawOrder;
-}
-
-int Layer::getDrawOrder() const
-{
-    return drawOrder;
 }
  
 void Layer::clear()

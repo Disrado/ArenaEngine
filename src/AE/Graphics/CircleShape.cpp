@@ -44,6 +44,14 @@ CircleShape::CircleShape(const std::string& name,
 }
 
 
+std::shared_ptr<CircleShape> CircleShape::create(const std::string& name,
+						 float radius,
+						 std::size_t pointCount,
+						 bool visible)
+{
+    return std::make_shared<CircleShape>(name, radius, pointCount, visible);
+}
+
 ////////////////////////////////////////////////////////////
 void CircleShape::setRadius(float radius)
 {

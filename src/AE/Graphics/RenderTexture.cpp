@@ -40,6 +40,10 @@ m_impl(NULL)
 
 }
 
+std::shared_ptr<RenderTexture> RenderTexture::create()
+{
+    return std::make_shared<RenderTexture>();
+}
 
 ////////////////////////////////////////////////////////////
 RenderTexture::~RenderTexture()

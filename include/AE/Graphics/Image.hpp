@@ -33,6 +33,7 @@
 #include <AE/Graphics/Rect.hpp>
 #include <string>
 #include <vector>
+#include <memory>
 
 
 namespace ae
@@ -54,6 +55,8 @@ public:
     ///
     ////////////////////////////////////////////////////////////
     Image();
+
+    static std::shared_ptr<Image> create();
 
     ////////////////////////////////////////////////////////////
     /// \brief Destructor
