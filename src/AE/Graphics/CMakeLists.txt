@@ -50,7 +50,13 @@ set(SRC
     ${SRCROOT}/Vertex.cpp
     ${INCROOT}/Vertex.hpp
     ${INCROOT}/Updatable.hpp
+    ${SRCROOT}/Animation.cpp
+    ${INCROOT}/Animation.hpp
+    ${SRCROOT}/MoveAnimation.cpp
+    ${INCROOT}/MoveAnimation.hpp
+
 )
+
 if(NOT SFML_OPENGL_ES)
     list(APPEND SRC ${SRCROOT}/GLLoader.cpp)
     list(APPEND SRC ${SRCROOT}/GLLoader.hpp)
@@ -84,6 +90,10 @@ set(DRAWABLES_SRC
     ${INCROOT}/Layer.hpp
     ${SRCROOT}/Scene.cpp
     ${INCROOT}/Scene.hpp
+    ${SRCROOT}/AnimatedSprite.cpp
+    ${INCROOT}/AnimatedSprite.hpp
+    ${SRCROOT}/AnimationManager.cpp
+    ${INCROOT}/AnimationManager.hpp
 )
 source_group("drawables" FILES ${DRAWABLES_SRC})
 
