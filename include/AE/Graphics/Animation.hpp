@@ -5,10 +5,7 @@ namespace ae
 {
     
 class Animation
-{
-private:
-
-    
+{    
 public:
     virtual void animate(float dt) = 0;
 };

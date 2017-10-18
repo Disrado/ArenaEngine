@@ -54,7 +54,6 @@ set(SRC
     ${INCROOT}/Animation.hpp
     ${SRCROOT}/MoveAnimation.cpp
     ${INCROOT}/MoveAnimation.hpp
-
 )
 
 if(NOT SFML_OPENGL_ES)
@@ -90,6 +89,8 @@ set(DRAWABLES_SRC
     ${INCROOT}/Layer.hpp
     ${SRCROOT}/Scene.cpp
     ${INCROOT}/Scene.hpp
+    ${SRCROOT}/SpriteAnimation.cpp
+    ${INCROOT}/SpriteAnimation.hpp
     ${SRCROOT}/AnimatedSprite.cpp
     ${INCROOT}/AnimatedSprite.hpp
     ${SRCROOT}/AnimationManager.cpp

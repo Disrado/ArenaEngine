@@ -4,6 +4,7 @@
 #include <AE/Graphics/Animation.hpp>
 #include <AE/Graphics/Sprite.hpp>
 #include <AE/Graphics/Texture.hpp>
+#include <AE/Graphics/SpriteAnimation.hpp>
 #include <vector>
 #include <unordered_map>
 
@@ -12,30 +13,28 @@ using namespace std;
 namespace ae
 {
     
-class SFML_GRAPHICS_API AnimatedSprite : public Sprite,
-                                         public Animation
+class SFML_GRAPHICS_API AnimatedSprite : public Sprite
 {
 public:
-    typedef std::unordered_map<std::string,
-                               vector<std::shared_ptr<ae::Texture>>> AnimationsList;
-    typedef std::shared_ptr<ae::Texture> TexturePtr;
-    
+    typedef std::shared_ptr<ae::SpriteAnimation> SAnimationPtr;
+    typedef std::unordered_map<std::string name, SAnimationPtr> AnimationsList;
+
 private:
     AnimationsList animations;
-    TexturePtr currentFrame;
-    float fps;
-    bool looped;
+    SAnimationPtr currentAnimation;
     
 public:
-    AnimatedSprite(float _fps);
-    void addAnimation(const std::string& name,
-                      const std::vector<std::shared_ptr<ae::Texture>>& frames);
+    AnimatedSprite();
 
-    void setLoop();
-    void stop();
-    void play();
+    //new animation can be created only from this class
+    //createAnimation();
     
-    void animate(float dt) override;
+    void addAnimation(const SpriteAnimation& animation);
+
+    SAnimationPtr getAnimation(std::string name) const;
+    
+    void animate(float dt);
+    void draw(RenderTarget& target, RenderStates states) const override;
 };    
 }
 
