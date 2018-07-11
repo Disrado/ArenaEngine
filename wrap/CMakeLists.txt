@@ -16,8 +16,8 @@ include_directories(${SOURCE_DIR})
 
 link_directories(${SDL2_LIB_DIR}/)
 
-file(GLOB HEADERS "${SOURCE_DIR}/AE/*.hpp")
-file(GLOB SOURCES "${SOURCE_DIR}/AE/*.cpp")
+file(GLOB HEADERS "${SOURCE_DIR}/AE/System/*.hpp")
+file(GLOB SOURCES "${SOURCE_DIR}/AE/System/*.cpp")
 
 find_library(libSDL2 SDL2 ${SDL2_LIB_DIR})
 find_library(libSDL2_image SDL2_image ${SDL2_LIB_DIR})
@@ -41,7 +41,7 @@ file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
 ADD_LIBRARY(AE SHARED ${SOURCES} ${HEADERS})
 
-target_link_libraries(AE 
+target_link_libraries(AE PUBLIC 
     ${libSDL2}
     ${libSDL2_image}
     ${libSDL2_mixer}
