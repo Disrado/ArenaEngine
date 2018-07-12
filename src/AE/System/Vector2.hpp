@@ -5,7 +5,10 @@ namespace ae {
 template<typename T>
 class Vector2 {
 public:
+    Vector2() = default;
     Vector2(T x, T y);
+
+    // Vector2(std::initializer_list<T> list) { }
 
     template<typename U>
     Vector2(const Vector2<U>& vector);
